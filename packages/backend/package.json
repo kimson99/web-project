@@ -1,0 +1,12 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "php artisan config:cache && php artisan route:cache",
+        "dev": "composer dev"
+    },
+    "devDependencies": {
+   		"concurrently": "^9.0.1"
+    }
+}

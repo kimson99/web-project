@@ -1,0 +1,7 @@
+pre-commit:
+  jobs:
+    - name: lint frontend
+      run: pnpm fe lint {staged_files}
+
+    - name: lint backend
+      run: pnpm be lint {staged_files}

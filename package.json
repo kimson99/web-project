@@ -1,0 +1,17 @@
+{
+  "name": "group-web-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "fe": "pnpm -F frontend",
+    "be": "pnpm -F backend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lefthook": "^1.11.14"
+  }
+}

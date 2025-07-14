@@ -1,0 +1,24 @@
+{
+	"name": "@repo/api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"exports": {
+		".": "./generated/index.ts",
+		"./client": "./generated/client/index.ts"
+	},
+	"scripts": {
+		"generate": "openapi-ts -i ../backend/api.json -o ./generated -c @hey-api/client-axios",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@hey-api/openapi-ts": "^0.77.0",
+		"typescript": "~5.8.3"
+	},
+	"dependencies": {
+		"axios": "^1.10.0"
+	}
+}
