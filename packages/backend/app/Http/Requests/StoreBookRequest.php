@@ -23,7 +23,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'isbn'=> ['string'],
-            'name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
             'cover_image_path' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
@@ -41,8 +41,8 @@ class StoreBookRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Book name is required.',
-            'name.max' => 'Book name cannot exceed 255 characters.',
+            'title.required' => 'Book title is required.',
+            'title.max' => 'Book title cannot exceed 255 characters.',
             'description.required' => 'Book description is required.',
             'description.max' => 'Book description cannot exceed 255 characters.',
             'cover_image_path.required' => 'Cover image path is required.',

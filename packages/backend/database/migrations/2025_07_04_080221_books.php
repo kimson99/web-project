@@ -20,7 +20,7 @@ return new class extends Migration
 
         Schema::create('books', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->string('name');
+            $table->string('title');
             $table->string("isbn")->nullable();
             $table->string('description');
             $table->float('average_rating', 1)->default(0);

@@ -4,6 +4,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,15 @@ Route::middleware("auth:sanctum")->group(function() {
     Route::prefix('media')->name('media.')->group(function() {
         Route::post('/upload-image', [MediaController::class, 'uploadImage']);
         Route::get('/serve/{path}', [MediaController::class, 'serveImage'])->where('path', '.*');
+    });
+
+    // Reviews
+    Route::prefix('reviews')->name('reviews.')->group(function() {
+        Route::get('/', [ReviewController::class, 'index']);
+        Route::post('/', [ReviewController::class, 'store']);
+        Route::get('/{review}', [ReviewController::class, 'show']);
+        Route::put('/{review}', [ReviewController::class, 'update']);
+        Route::delete('/{review}', [ReviewController::class, 'destroy']);
     });
 });
 
