@@ -31,9 +31,7 @@ class Book extends Model
         'description',
         'average_rating',
         'cover_image_path',
-        'author',
         'num_pages',
-        'edition',
         'published_year',
         'is_added_by_system',
         'book_status',
@@ -82,5 +80,13 @@ class Book extends Model
     public function userRatings(): HasMany
     {
         return $this->hasMany(UserBookRating::class);
+    }
+
+    /**
+     * Get the authors for the book.
+     */
+    public function authors(): BelongsToMany
+    {
+        return $this->belongsToMany(Author::class, 'author_book');
     }
 }

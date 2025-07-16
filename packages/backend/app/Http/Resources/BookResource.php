@@ -24,11 +24,16 @@ class BookResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'rating' => $this->rating,
+            'average_rating' => $this->average_rating,
             'cover_image_path' => $this->cover_image_path,
-            'author' => $this->author,
+            'authors' => $this->authors->map(function ($author) {
+                return [
+                    'id' => $author->id,
+                    'name' => $author->name,
+                    'avatar_image_path' => $author->avatar_image_path,
+                ];
+            }),
             'num_pages' => $this->num_pages,
-            'edition' => $this->edition,
             'published_year' => $this->published_year,
             'is_added_by_system' => $this->is_added_by_system,
             'book_status' => $this->book_status,

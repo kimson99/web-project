@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,28 +13,41 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create("genres", function (Blueprint $table) {
-            $table->uuid("id")->primary(); 
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->string("name");
+            $table->timestamps();
+        });
+
+        Schema::create("authors", function (Blueprint $table) {
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())"));
+            $table->string("external_id")->nullable();
+            $table->string("name");
+            $table->string("avatar_image_path")->nullable();
             $table->timestamps();
         });
 
 
         Schema::create('books', function (Blueprint $table) {
-            $table->uuid("id")->primary();
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())"));
             $table->string('title');
             $table->string("isbn")->nullable();
-            $table->string('description');
+            $table->string('description', 5000);
             $table->float('average_rating', 1)->default(0);
-            $table->string('cover_image_path');
-            $table->string('author');
+            $table->string('cover_image_path')->nullable();
             $table->integer('num_pages');
-            $table->string('edition');
             $table->string('published_year');
-            $table->boolean('is_added_by_system');
+            $table->boolean('is_added_by_system')->default(false);
             $table->enum("book_status", ["approved", 'waiting-for-approval']);
 
           
-            $table->foreignUuid('added_by')->constrained('users')->nullable();
+            $table->foreignUuid('added_by')->nullable()->constrained('users');
+            $table->timestamps();
+        });
+
+        Schema::create("author_book", function (Blueprint $table) {
+            $table->uuid("id")->primary()->default("UUID()");
+            $table->foreignUuid('author_id')->constrained('authors');
+            $table->foreignUuid('book_id')->constrained('books');
             $table->timestamps();
         });
 
@@ -52,7 +66,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create("user_books", function (Blueprint $table) {
+        Schema::create("user_book", function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('book_id')->constrained('books');
@@ -70,10 +84,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("user_book_log");
+        Schema::dropIfExists("user_books");
         Schema::dropIfExists("user_book_rating");
         Schema::dropIfExists("book_genre");
+        Schema::dropIfExists("author_book");
         Schema::dropIfExists("books");
+        Schema::dropIfExists("authors");
         Schema::dropIfExists("genres");
     }
 };
