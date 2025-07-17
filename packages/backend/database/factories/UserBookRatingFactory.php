@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Book;
-use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,9 +19,9 @@ class UserBookRatingFactory extends Factory
     public function definition(): array
     {
         return [
-            'book_id' => Book::factory(),
-            'user_id' => User::factory(),
-            'rating' => fake()->numberBetween(0, 5)
+            'book_id' => Book::inRandomOrder()->first()->id ?? Book::factory(),
+            'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
+            'rating' => fake()->numberBetween(1, 5)
         ];
     }
 }

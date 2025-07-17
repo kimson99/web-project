@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create("genres", function (Blueprint $table) {
             $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->string("name");
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
         Schema::create("authors", function (Blueprint $table) {
@@ -23,7 +24,8 @@ return new class extends Migration
             $table->string("external_id")->nullable();
             $table->string("name");
             $table->string("avatar_image_path")->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
 
@@ -41,41 +43,44 @@ return new class extends Migration
 
           
             $table->foreignUuid('added_by')->nullable()->constrained('users');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
         Schema::create("author_book", function (Blueprint $table) {
-            $table->uuid("id")->primary()->default("UUID()");
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->foreignUuid('author_id')->constrained('authors');
             $table->foreignUuid('book_id')->constrained('books');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
         Schema::create("book_genre", function (Blueprint $table) {
-            $table->uuid("id")->primary();
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->foreignUuid('genre_id')->constrained('genres');
             $table->foreignUuid('book_id')->constrained('books');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
         Schema::create("user_book_rating", function (Blueprint $table) {
-            $table->uuid("id")->primary();
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('book_id')->constrained('books');
             $table->smallInteger('rating');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
 
         Schema::create("user_book", function (Blueprint $table) {
-            $table->uuid("id")->primary();
+            $table->uuid("id")->primary()->default(DB::raw("(UUID())")); 
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('book_id')->constrained('books');
             $table->string('notes')->default("");
-            $table->timestampTz("start_date")->default(now());
-            $table->timestampTz("end_date")->default(now());
             $table->integer("current_page")->default(0);
             $table->enum("status", ["want-to-read", "reading", "finished"]);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
     }
 
@@ -84,7 +89,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists("user_books");
+        Schema::dropIfExists("user_book");
         Schema::dropIfExists("user_book_rating");
         Schema::dropIfExists("book_genre");
         Schema::dropIfExists("author_book");

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignUuid('book_id')->constrained('books');
             $table->string('content');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
     }
 
