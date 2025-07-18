@@ -1,0 +1,17 @@
+{
+  "name": "@repo/book-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scrape": "python book_scraper.py",
+    "combine": "python combine.py",
+    "authors": "python make_authors.py",
+    "csv": "python make_csv.py",
+    "all": "python book_scraper.py && python combine.py && python make_authors.py && python make_csv.py",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
