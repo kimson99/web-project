@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Http\Requests\IndexBookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use App\Models\Author;
@@ -15,9 +16,54 @@ class BookController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexBookRequest $request)
     {
-        //
+        $query = Book::with(['authors', 'genres']);
+
+        // Apply search
+        if ($request->filled('search')) {
+            $searchTerm = $request->validated('search');
+            
+            $query->where(function ($q) use ($searchTerm) {
+                // Search in books table (title and description)
+                $q->whereRaw('MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)', [$searchTerm])
+                  ->orWhereHas('authors', function ($authorQuery) use ($searchTerm) {
+                      // Search in authors table (name)
+                      $authorQuery->whereRaw('MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)', [$searchTerm]);
+                  });
+            });
+        }
+
+        // Apply pagination
+        $skip = $request->validated('skip', 0);
+        $take = $request->validated('take', 20);
+
+        $books = $query->skip($skip)->take($take)->get();
+        $total = $query->count();
+
+        // If user is authenticated, load additional user-specific data
+        if (auth()->check()) {
+            $userId = auth()->id();
+            
+            $books->load([
+                'userBooks' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'userRatings' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }
+            ]);
+        }
+
+        return BookResource::collection($books)->additional([
+            'meta' => [
+                'total' => $total,
+                'skip' => $skip,
+                'take' => $take,
+                'has_more' => ($skip + $take) < $total,
+                'authenticated' => auth()->check(),
+            ]
+        ]);
     }
 
     /**

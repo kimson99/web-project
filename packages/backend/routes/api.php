@@ -17,6 +17,9 @@ Route::prefix('auth')->name('auth.')->group(function() {
     Route::post("/reset-password", [AuthController::class, 'resetPassword']);
 })->middleware("guest");
 
+// Public book browsing
+Route::get('/books', [BookController::class, 'index']);
+
 // Protected routes (authentication required)
 Route::middleware("auth:sanctum")->group(function() {
     // User management
@@ -25,9 +28,8 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 
-    // Books
+    // Books (protected operations)
     Route::prefix('books')->name('books.')->group(function() {
-        Route::get('/', [BookController::class, 'index']);
         Route::post('/', [BookController::class, 'store']);
         Route::get('/{book}', [BookController::class, 'show']);
         Route::put('/{book}', [BookController::class, 'update']);

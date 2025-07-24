@@ -20,7 +20,7 @@ class BookResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
@@ -41,5 +41,22 @@ class BookResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+
+        // Add user-specific information if authenticated
+        if (auth()->check()) {
+            $userBook = $this->userBooks->first();
+            $userRating = $this->userRatings->first();
+
+            $data['user_data'] = [
+                'reading_status' => $userBook ? $userBook->status : null,
+                'current_page' => $userBook ? $userBook->current_page : null,
+                'notes' => $userBook ? $userBook->notes : null,
+                'user_rating' => $userRating ? $userRating->rating : null,
+                'start_date' => $userBook ? $userBook->start_date : null,
+                'end_date' => $userBook ? $userBook->end_date : null,
+            ];
+        }
+
+        return $data;
     }
 }
