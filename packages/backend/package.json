@@ -1,4 +1,6 @@
 {
+    "name": "backend",
+    "version": "0.0.0",
     "$schema": "https://json.schemastore.org/package.json",
     "private": true,
     "type": "module",

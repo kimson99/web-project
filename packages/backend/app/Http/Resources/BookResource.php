@@ -46,15 +46,13 @@ class BookResource extends JsonResource
         if (auth()->check()) {
             $userBook = $this->userBooks->first();
             $userRating = $this->userRatings->first();
-
-            $data['user_data'] = [
-                'reading_status' => $userBook ? $userBook->status : null,
-                'current_page' => $userBook ? $userBook->current_page : null,
-                'notes' => $userBook ? $userBook->notes : null,
-                'user_rating' => $userRating ? $userRating->rating : null,
-                'start_date' => $userBook ? $userBook->start_date : null,
-                'end_date' => $userBook ? $userBook->end_date : null,
-            ];
+              
+            $data['user_data'] = $userBook ? [
+                'reading_status' => $userBook->status ? $userBook->status : null,
+                'current_page' => $userBook->current_page ? $userBook->current_page : null,
+                'notes' => $userBook->notes ? $userBook->notes : null,
+                'user_rating' => $userRating->rating ? $userRating->rating : null
+            ] : null;
         }
 
         return $data;

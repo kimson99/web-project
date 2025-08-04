@@ -25,6 +25,10 @@ class IndexBookRequest extends FormRequest
             'skip' => ['nullable', 'integer', 'min:0'],
             'take' => ['nullable', 'integer', 'min:1', 'max:100'],
             'search' => ['nullable', 'string', 'max:255'],
+            'genres' => ['nullable', 'array'],
+            'genres.*' => ['string', 'exists:genres,name'],
+            'sort_by' => ['nullable', 'string', 'in:title,rating,published_year,created_at,num_pages'],
+            'sort_order' => ['nullable', 'string', 'in:asc,desc'],
         ];
     }
 
@@ -43,6 +47,13 @@ class IndexBookRequest extends FormRequest
             'take.max' => 'Take cannot exceed 100.',
             'search.string' => 'Search term must be a string.',
             'search.max' => 'Search term cannot exceed 255 characters.',
+            'genres.array' => 'Genres must be provided as a list.',
+            'genres.*.string' => 'Genre name must be a string.',
+            'genres.*.exists' => 'The selected genre does not exist.',
+            'sort_by.string' => 'Sort by must be a string.',
+            'sort_by.in' => 'Sort by must be one of: title, rating, published_year, created_at, num_pages.',
+            'sort_order.string' => 'Sort order must be a string.',
+            'sort_order.in' => 'Sort order must be one of: asc, desc.',
         ];
     }
 }

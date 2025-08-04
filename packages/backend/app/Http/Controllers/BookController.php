@@ -8,6 +8,7 @@ use App\Http\Requests\IndexBookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use App\Models\Author;
+use App\Models\Genre;
 use Dedoc\Scramble\Support\Generator\Tag;
 
 #[Tag('Books')]
@@ -32,6 +33,27 @@ class BookController
                       $authorQuery->whereRaw('MATCH(name) AGAINST(? IN NATURAL LANGUAGE MODE)', [$searchTerm]);
                   });
             });
+        }
+
+        // Apply genre filtering
+        if ($request->filled('genres')) {
+            $genres = $request->validated('genres');
+            $query->whereHas('genres', function ($genreQuery) use ($genres) {
+                $genreQuery->whereIn('name', $genres);
+            });
+        }
+
+        // Apply sorting
+        $sortBy = $request->validated('sort_by', 'created_at');
+        $sortOrder = $request->validated('sort_order', 'desc');
+        
+        // Handle special sorting cases
+        if ($sortBy === 'rating') {
+            $query->orderBy('average_rating', $sortOrder);
+        } elseif ($sortBy === 'published_year') {
+            $query->orderBy('published_year', $sortOrder);
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
         }
 
         // Apply pagination
@@ -62,16 +84,26 @@ class BookController
                 'take' => $take,
                 'has_more' => ($skip + $take) < $total,
                 'authenticated' => auth()->check(),
+                'filters' => [
+                    'search' => $request->validated('search'),
+                    'genres' => $request->validated('genres'),
+                    'sort_by' => $sortBy,
+                    'sort_order' => $sortOrder,
+                ]
             ]
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Get available genres for filtering.
      */
-    public function create()
+    public function genres()
     {
-        //
+        $genres = Genre::orderBy('name')->get(['id', 'name']);
+        
+        return response()->json([
+            'genres' => $genres
+        ]);
     }
 
     /**
@@ -111,14 +143,6 @@ class BookController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Book $book)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateBookRequest $request, Book $book)
@@ -146,6 +170,8 @@ class BookController
      */
     public function destroy(Book $book)
     {
-        //
+        $book->delete();
+
+        return response()->json(['message' => 'Book deleted successfully']);
     }
 }

@@ -18,6 +18,13 @@ class UserBook extends Model
      */
     protected $keyType = 'string';
 
+     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'user_book';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,8 +34,6 @@ class UserBook extends Model
         'user_id',
         'book_id',
         'notes',
-        'start_date',
-        'end_date',
         'current_page',
         'status',
     ];
@@ -39,8 +44,6 @@ class UserBook extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
         'current_page' => 'integer',
     ];
 

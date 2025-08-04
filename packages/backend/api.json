@@ -366,6 +366,50 @@
                             ],
                             "maxLength": 255
                         }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "title",
+                                "rating",
+                                "published_year",
+                                "created_at",
+                                "num_pages"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "genres",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "array",
+                                "null"
+                            ],
+                            "items": {
+                                "type": "string"
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -399,6 +443,29 @@
                                                 },
                                                 "authenticated": {
                                                     "type": "string"
+                                                },
+                                                "filters": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "search": {
+                                                            "type": "string"
+                                                        },
+                                                        "genres": {
+                                                            "type": "string"
+                                                        },
+                                                        "sort_by": {
+                                                            "type": "string"
+                                                        },
+                                                        "sort_order": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "search",
+                                                        "genres",
+                                                        "sort_by",
+                                                        "sort_order"
+                                                    ]
                                                 }
                                             },
                                             "required": [
@@ -406,7 +473,8 @@
                                                 "skip",
                                                 "take",
                                                 "has_more",
-                                                "authenticated"
+                                                "authenticated",
+                                                "filters"
                                             ]
                                         }
                                     },
@@ -462,44 +530,36 @@
                 }
             }
         },
-        "/books/{book}": {
+        "/books/genres": {
             "get": {
-                "operationId": "book.show",
-                "summary": "Display the specified resource",
+                "operationId": "book.genres",
+                "summary": "Get available genres for filtering",
                 "tags": [
                     "Book"
                 ],
-                "parameters": [
-                    {
-                        "name": "book",
-                        "in": "path",
-                        "required": true,
-                        "description": "The book ID",
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "`BookResource`",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BookResource"
+                                    "type": "object",
+                                    "properties": {
+                                        "genres": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "genres"
+                                    ]
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
-            },
+            }
+        },
+        "/books/{book}": {
             "put": {
                 "operationId": "book.update",
                 "summary": "Update the specified resource in storage",
@@ -572,7 +632,62 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book deleted successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "get": {
+                "operationId": "book.show",
+                "summary": "Display the specified resource",
+                "tags": [
+                    "Book"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -1159,6 +1274,354 @@
                     }
                 }
             }
+        },
+        "/library": {
+            "get": {
+                "operationId": "userLibrary.index",
+                "summary": "Display a listing of the user's library",
+                "tags": [
+                    "UserLibrary"
+                ],
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "take",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "want-to-read",
+                                "reading",
+                                "finished"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `UserBookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserBookResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "string"
+                                                },
+                                                "skip": {
+                                                    "type": "string"
+                                                },
+                                                "take": {
+                                                    "type": "string"
+                                                },
+                                                "has_more": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "total",
+                                                "skip",
+                                                "take",
+                                                "has_more"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "userLibrary.store",
+                "summary": "Store a newly created user book in storage",
+                "tags": [
+                    "UserLibrary"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreUserBookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`UserBookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserBookResource"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book is already in your library."
+                                            ]
+                                        },
+                                        "user_book": {
+                                            "$ref": "#/components/schemas/UserBookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "user_book"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/library/{userBook}": {
+            "get": {
+                "operationId": "userLibrary.show",
+                "summary": "Display the specified user book",
+                "tags": [
+                    "UserLibrary"
+                ],
+                "parameters": [
+                    {
+                        "name": "userBook",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user book ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserBookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserBookResource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Unauthorized"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "userLibrary.update",
+                "summary": "Update the specified user book in storage",
+                "tags": [
+                    "UserLibrary"
+                ],
+                "parameters": [
+                    {
+                        "name": "userBook",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user book ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserBookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`UserBookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserBookResource"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "userLibrary.destroy",
+                "summary": "Remove the specified user book from storage",
+                "tags": [
+                    "UserLibrary"
+                ],
+                "parameters": [
+                    {
+                        "name": "userBook",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user book ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book removed from library successfully"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Unauthorized"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1447,6 +1910,43 @@
                 ],
                 "title": "StoreReviewRequest"
             },
+            "StoreUserBookRequest": {
+                "type": "object",
+                "properties": {
+                    "book_id": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    },
+                    "current_page": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "want-to-read",
+                            "reading",
+                            "finished"
+                        ]
+                    }
+                },
+                "required": [
+                    "book_id"
+                ],
+                "title": "StoreUserBookRequest"
+            },
             "UpdateBookRequest": {
                 "type": "object",
                 "properties": {
@@ -1497,6 +1997,37 @@
                 ],
                 "title": "UpdateReviewRequest"
             },
+            "UpdateUserBookRequest": {
+                "type": "object",
+                "properties": {
+                    "notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    },
+                    "current_page": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "want-to-read",
+                            "reading",
+                            "finished"
+                        ]
+                    }
+                },
+                "title": "UpdateUserBookRequest"
+            },
             "UploadImageRequest": {
                 "type": "object",
                 "properties": {
@@ -1511,6 +2042,122 @@
                     "image"
                 ],
                 "title": "UploadImageRequest"
+            },
+            "UserBookResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "book_id": {
+                        "type": "string"
+                    },
+                    "notes": {
+                        "type": "string"
+                    },
+                    "start_date": {
+                        "type": "string"
+                    },
+                    "end_date": {
+                        "type": "string"
+                    },
+                    "current_page": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "book": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "average_rating": {
+                                "type": "number"
+                            },
+                            "cover_image_path": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "authors": {
+                                "type": "string"
+                            },
+                            "num_pages": {
+                                "type": "integer"
+                            },
+                            "published_year": {
+                                "type": "string"
+                            },
+                            "is_added_by_system": {
+                                "type": "boolean"
+                            },
+                            "book_status": {
+                                "type": "string"
+                            },
+                            "added_by": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "title",
+                            "description",
+                            "average_rating",
+                            "cover_image_path",
+                            "authors",
+                            "num_pages",
+                            "published_year",
+                            "is_added_by_system",
+                            "book_status",
+                            "added_by",
+                            "created_at",
+                            "updated_at"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "user_id",
+                    "book_id",
+                    "notes",
+                    "start_date",
+                    "end_date",
+                    "current_page",
+                    "status",
+                    "created_at",
+                    "updated_at",
+                    "book"
+                ],
+                "title": "UserBookResource"
             },
             "UserResource": {
                 "type": "object",

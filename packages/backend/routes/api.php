@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\UserLibraryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::prefix('auth')->name('auth.')->group(function() {
 
 // Public book browsing
 Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/genres', [BookController::class, 'genres']);
 
 // Protected routes (authentication required)
 Route::middleware("auth:sanctum")->group(function() {
@@ -28,12 +30,15 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 
-    // Books (protected operations)
-    Route::prefix('books')->name('books.')->group(function() {
+    // Books (admin operations)
+    Route::prefix('books')->name('books.')->middleware('admin')->group(function() {
         Route::post('/', [BookController::class, 'store']);
-        Route::get('/{book}', [BookController::class, 'show']);
         Route::put('/{book}', [BookController::class, 'update']);
         Route::delete('/{book}', [BookController::class, 'destroy']);
+    });
+
+    Route::prefix('books')->name('books.')->group(function() {
+        Route::get('/{book}', [BookController::class, 'show']);
     });
 
     // Media
@@ -49,6 +54,15 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::get('/{review}', [ReviewController::class, 'show']);
         Route::put('/{review}', [ReviewController::class, 'update']);
         Route::delete('/{review}', [ReviewController::class, 'destroy']);
+    });
+
+    // User Library
+    Route::prefix('library')->name('library.')->group(function() {
+        Route::get('/', [UserLibraryController::class, 'index']);
+        Route::post('/', [UserLibraryController::class, 'store']);
+        Route::get('/{userBook}', [UserLibraryController::class, 'show']);
+        Route::put('/{userBook}', [UserLibraryController::class, 'update']);
+        Route::delete('/{userBook}', [UserLibraryController::class, 'destroy']);
     });
 });
 
