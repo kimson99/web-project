@@ -48,7 +48,7 @@ class BookController
         $sortOrder = $request->validated('sort_order', 'desc');
         
         // Handle special sorting cases
-        if ($sortBy === 'rating') {
+        if ($sortBy === 'average_rating') {
             $query->orderBy('average_rating', $sortOrder);
         } elseif ($sortBy === 'published_year') {
             $query->orderBy('published_year', $sortOrder);

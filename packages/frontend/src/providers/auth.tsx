@@ -1,7 +1,5 @@
-import { createContext } from "react";
+import { authContext } from "./useAuthContext";
 import useAuth from "./useAuth";
-
-const authContext = createContext<ReturnType<typeof useAuth> | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const auth = useAuth({});

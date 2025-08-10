@@ -22,6 +22,10 @@ Route::prefix('auth')->name('auth.')->group(function() {
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/genres', [BookController::class, 'genres']);
 
+// Public review browsing
+Route::get('/reviews', [ReviewController::class, 'index']);
+Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+
 // Protected routes (authentication required)
 Route::middleware("auth:sanctum")->group(function() {
     // User management
@@ -47,11 +51,9 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::get('/serve/{path}', [MediaController::class, 'serveImage'])->where('path', '.*');
     });
 
-    // Reviews
+    // Reviews (authenticated operations)
     Route::prefix('reviews')->name('reviews.')->group(function() {
-        Route::get('/', [ReviewController::class, 'index']);
         Route::post('/', [ReviewController::class, 'store']);
-        Route::get('/{review}', [ReviewController::class, 'show']);
         Route::put('/{review}', [ReviewController::class, 'update']);
         Route::delete('/{review}', [ReviewController::class, 'destroy']);
     });

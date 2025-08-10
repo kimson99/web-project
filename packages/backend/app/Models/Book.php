@@ -31,6 +31,7 @@ class Book extends Model
         'description',
         'average_rating',
         'cover_image_path',
+        'ol_cover_key',
         'num_pages',
         'published_year',
         'is_added_by_system',
@@ -88,5 +89,29 @@ class Book extends Model
     public function authors(): BelongsToMany
     {
         return $this->belongsToMany(Author::class, 'author_book');
+    }
+
+    /**
+     * Get the reviews for this book.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get the cover image URL.
+     */
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        if ($this->cover_image_path) {
+            return config('app.url') . '/' . $this->cover_image_path;
+        }
+        
+        if ($this->ol_cover_key) {
+            return "https://covers.openlibrary.org/b/olid/{$this->ol_cover_key}-M.jpg";
+        }
+        
+        return null;
     }
 }

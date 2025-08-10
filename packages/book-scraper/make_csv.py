@@ -10,7 +10,7 @@ def make_book_csv():
     with open('./data/all.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    headers = ["id", "title", "description", "num_pages", "published_year"]
+    headers = ["id", "title", "description", "num_pages", "published_year", "ol_cover_key"]
     
     with open('./data/csv/books.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f, quoting=csv.QUOTE_ALL, escapechar='\\')
@@ -22,7 +22,8 @@ def make_book_csv():
                 record['title'],
                 record['description'],
                 record.get('number_of_pages', 0),
-                0
+                record.get('first_publish_year', "0"),
+                record.get('cover_edition_key')
             ])
 
 def make_book_genre_csv():

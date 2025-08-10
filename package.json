@@ -6,6 +6,8 @@
   "scripts": {
     "fe": "pnpm -F frontend",
     "be": "pnpm -F backend",
+    "api": "pnpm -F api",
+    "scraper": "pnpm -F book-scraper",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

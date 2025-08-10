@@ -377,7 +377,7 @@
                             ],
                             "enum": [
                                 "title",
-                                "rating",
+                                "average_rating",
                                 "published_year",
                                 "created_at",
                                 "num_pages"
@@ -936,6 +936,69 @@
                 "tags": [
                     "Review"
                 ],
+                "parameters": [
+                    {
+                        "name": "book_id",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "take",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "created_at",
+                                "updated_at"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `ReviewResource`",
@@ -953,76 +1016,32 @@
                                         "meta": {
                                             "type": "object",
                                             "properties": {
-                                                "current_page": {
-                                                    "type": "integer"
+                                                "authenticated": {
+                                                    "type": "string"
                                                 },
-                                                "from": {
-                                                    "type": [
-                                                        "integer",
-                                                        "null"
-                                                    ]
-                                                },
-                                                "last_page": {
-                                                    "type": "integer"
-                                                },
-                                                "links": {
-                                                    "type": "array",
-                                                    "description": "Generated paginator links.",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "label": {
-                                                                "type": "string"
-                                                            },
-                                                            "active": {
-                                                                "type": "boolean"
-                                                            }
+                                                "filters": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "book_id": {
+                                                            "type": "string"
                                                         },
-                                                        "required": [
-                                                            "url",
-                                                            "label",
-                                                            "active"
-                                                        ]
-                                                    }
-                                                },
-                                                "path": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ],
-                                                    "description": "Base path for paginator generated URLs."
-                                                },
-                                                "per_page": {
-                                                    "type": "integer",
-                                                    "description": "Number of items shown per page."
-                                                },
-                                                "to": {
-                                                    "type": [
-                                                        "integer",
-                                                        "null"
-                                                    ],
-                                                    "description": "Number of the last item in the slice."
-                                                },
-                                                "total": {
-                                                    "type": "integer",
-                                                    "description": "Total number of items being paginated."
+                                                        "sort_by": {
+                                                            "type": "string"
+                                                        },
+                                                        "sort_order": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "book_id",
+                                                        "sort_by",
+                                                        "sort_order"
+                                                    ]
                                                 }
                                             },
                                             "required": [
-                                                "current_page",
-                                                "from",
-                                                "last_page",
-                                                "links",
-                                                "path",
-                                                "per_page",
-                                                "to",
-                                                "total"
+                                                "authenticated",
+                                                "filters"
                                             ]
                                         },
                                         "links": {
@@ -1070,8 +1089,8 @@
                             }
                         }
                     },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             },
@@ -1146,9 +1165,6 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1641,14 +1657,33 @@
                     "average_rating": {
                         "type": "number"
                     },
-                    "cover_image_path": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                    "cover_image_url": {
+                        "type": "string"
                     },
                     "authors": {
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "avatar_image_path": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name",
+                                "avatar_image_path"
+                            ]
+                        }
                     },
                     "num_pages": {
                         "type": "integer"
@@ -1682,7 +1717,7 @@
                     "title",
                     "description",
                     "average_rating",
-                    "cover_image_path",
+                    "cover_image_url",
                     "authors",
                     "num_pages",
                     "published_year",
@@ -1802,12 +1837,23 @@
                             },
                             "email": {
                                 "type": "string"
+                            },
+                            "avatar_path": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "rating": {
+                                "type": "string"
                             }
                         },
                         "required": [
                             "id",
                             "name",
-                            "email"
+                            "email",
+                            "avatar_path",
+                            "rating"
                         ]
                     },
                     "book": {
@@ -1816,17 +1862,20 @@
                             "id": {
                                 "type": "string"
                             },
-                            "name": {
+                            "title": {
                                 "type": "string"
                             },
-                            "author": {
+                            "cover_image_url": {
+                                "type": "string"
+                            },
+                            "authors": {
                                 "type": "string"
                             }
                         },
                         "required": [
                             "id",
-                            "name",
-                            "author"
+                            "title",
+                            "cover_image_url"
                         ]
                     },
                     "created_at": {
@@ -2065,16 +2114,18 @@
                         "type": "string"
                     },
                     "current_page": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "status": {
                         "type": "string"
                     },
                     "created_at": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "updated_at": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "book": {
                         "type": "object",
@@ -2171,6 +2222,12 @@
                     "email": {
                         "type": "string"
                     },
+                    "avatar_path": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "created_at": {
                         "type": [
                             "string",
@@ -2190,6 +2247,7 @@
                     "id",
                     "name",
                     "email",
+                    "avatar_path",
                     "created_at",
                     "updated_at"
                 ],
@@ -2227,6 +2285,25 @@
                     }
                 }
             },
+            "ModelNotFoundException": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
             "AuthenticationException": {
                 "description": "Unauthenticated",
                 "content": {
@@ -2248,25 +2325,6 @@
             },
             "AuthorizationException": {
                 "description": "Authorization error",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string",
-                                    "description": "Error overview."
-                                }
-                            },
-                            "required": [
-                                "message"
-                            ]
-                        }
-                    }
-                }
-            },
-            "ModelNotFoundException": {
-                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {

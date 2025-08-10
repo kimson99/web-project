@@ -5,19 +5,29 @@
  */
 export type BookResource = {
     id: string;
-    name: string;
+    title: string;
     description: string;
-    rating: string;
-    cover_image_path: string;
-    author: string;
-    num_pages: string;
-    edition: string;
+    average_rating: number;
+    cover_image_url: string;
+    authors: Array<{
+        id: string;
+        name: string;
+        avatar_image_path: string | null;
+    }>;
+    num_pages: number;
     published_year: string;
-    is_added_by_system: string;
+    is_added_by_system: boolean;
     book_status: string;
-    added_by: string;
+    added_by: string | null;
     created_at: string;
     updated_at: string;
+};
+
+/**
+ * ForgotPasswordRequest
+ */
+export type ForgotPasswordRequest = {
+    email: string;
 };
 
 /**
@@ -39,17 +49,136 @@ export type RegisterRequest = {
 };
 
 /**
+ * ResetPasswordRequest
+ */
+export type ResetPasswordRequest = {
+    token: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+};
+
+/**
+ * ReviewResource
+ */
+export type ReviewResource = {
+    id: string;
+    content: string;
+    user_id: string;
+    book_id: string;
+    user?: {
+        id: string;
+        name: string;
+        email: string;
+        avatar_path: string | null;
+        rating: string;
+    };
+    book?: {
+        id: string;
+        title: string;
+        cover_image_url: string;
+        authors?: string;
+    };
+    created_at: string;
+    updated_at: string;
+};
+
+/**
  * StoreBookRequest
  */
 export type StoreBookRequest = {
     isbn?: string;
-    name: string;
+    title: string;
     description: string;
     cover_image_path: string;
-    author: string;
     num_pages: number;
-    edition: string;
     published_year: string;
+    authors: Array<string>;
+};
+
+/**
+ * StoreReviewRequest
+ */
+export type StoreReviewRequest = {
+    book_id: string;
+    content: string;
+};
+
+/**
+ * StoreUserBookRequest
+ */
+export type StoreUserBookRequest = {
+    book_id: string;
+    notes?: string | null;
+    current_page?: number | null;
+    status?: 'want-to-read' | 'reading' | 'finished';
+};
+
+/**
+ * UpdateBookRequest
+ */
+export type UpdateBookRequest = {
+    isbn?: string;
+    title?: string;
+    description?: string;
+    cover_image_path?: string;
+    num_pages?: number;
+    published_year?: string;
+    authors?: Array<string>;
+};
+
+/**
+ * UpdateReviewRequest
+ */
+export type UpdateReviewRequest = {
+    content: string;
+};
+
+/**
+ * UpdateUserBookRequest
+ */
+export type UpdateUserBookRequest = {
+    notes?: string | null;
+    current_page?: number | null;
+    status?: 'want-to-read' | 'reading' | 'finished';
+};
+
+/**
+ * UploadImageRequest
+ */
+export type UploadImageRequest = {
+    image: Blob | File;
+};
+
+/**
+ * UserBookResource
+ */
+export type UserBookResource = {
+    id: string;
+    user_id: string;
+    book_id: string;
+    notes: string;
+    start_date: string;
+    end_date: string;
+    current_page: number;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    book: {
+        id: string;
+        title: string;
+        description: string;
+        average_rating: number;
+        cover_image_path: string | null;
+        authors: string;
+        num_pages: number;
+        published_year: string;
+        is_added_by_system: boolean;
+        book_status: string;
+        added_by: string | null;
+        created_at: string;
+        updated_at: string;
+    };
 };
 
 /**
@@ -59,6 +188,7 @@ export type UserResource = {
     id: string;
     name: string;
     email: string;
+    avatar_path: string | null;
     created_at: string | null;
     updated_at: string | null;
 };
@@ -139,6 +269,88 @@ export type AuthCreateResponses = {
 
 export type AuthCreateResponse = AuthCreateResponses[keyof AuthCreateResponses];
 
+export type AuthForgotPasswordData = {
+    body: ForgotPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/forgot-password';
+};
+
+export type AuthForgotPasswordErrors = {
+    400: {
+        success: boolean;
+        message: 'Unable to send password reset link';
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type AuthForgotPasswordError = AuthForgotPasswordErrors[keyof AuthForgotPasswordErrors];
+
+export type AuthForgotPasswordResponses = {
+    200: {
+        success: boolean;
+        message: 'Password reset link sent to your email';
+        data: null;
+    };
+};
+
+export type AuthForgotPasswordResponse = AuthForgotPasswordResponses[keyof AuthForgotPasswordResponses];
+
+export type AuthResetPasswordData = {
+    body: ResetPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/reset-password';
+};
+
+export type AuthResetPasswordErrors = {
+    400: {
+        success: boolean;
+        message: 'Invalid or expired reset token';
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type AuthResetPasswordError = AuthResetPasswordErrors[keyof AuthResetPasswordErrors];
+
+export type AuthResetPasswordResponses = {
+    200: {
+        success: boolean;
+        message: 'Password reset successfully';
+        data: null;
+    };
+};
+
+export type AuthResetPasswordResponse = AuthResetPasswordResponses[keyof AuthResetPasswordResponses];
+
 export type AuthGetMeData = {
     body?: never;
     path?: never;
@@ -203,27 +415,60 @@ export type AuthLogoutResponse = AuthLogoutResponses[keyof AuthLogoutResponses];
 export type BookIndexData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        skip?: number | null;
+        take?: number | null;
+        search?: string | null;
+        sort_by?: 'title' | 'average_rating' | 'published_year' | 'created_at' | 'num_pages';
+        sort_order?: 'asc' | 'desc';
+        genres?: Array<string> | null;
+    };
     url: '/books';
 };
 
 export type BookIndexErrors = {
     /**
-     * Unauthenticated
+     * Validation error
      */
-    401: {
+    422: {
         /**
-         * Error overview.
+         * Errors overview.
          */
         message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
     };
 };
 
 export type BookIndexError = BookIndexErrors[keyof BookIndexErrors];
 
 export type BookIndexResponses = {
-    200: unknown;
+    /**
+     * Array of `BookResource`
+     */
+    200: {
+        data: Array<BookResource>;
+        meta: {
+            total: string;
+            skip: string;
+            take: string;
+            has_more: boolean;
+            authenticated: string;
+            filters: {
+                search: string;
+                genres: string;
+                sort_by: string;
+                sort_order: string;
+            };
+        };
+    };
 };
+
+export type BookIndexResponse = BookIndexResponses[keyof BookIndexResponses];
 
 export type BookStoreData = {
     body: StoreBookRequest;
@@ -279,6 +524,21 @@ export type BookStoreResponses = {
 
 export type BookStoreResponse = BookStoreResponses[keyof BookStoreResponses];
 
+export type BookGenresData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/books/genres';
+};
+
+export type BookGenresResponses = {
+    200: {
+        genres: string;
+    };
+};
+
+export type BookGenresResponse = BookGenresResponses[keyof BookGenresResponses];
+
 export type BookDestroyData = {
     body?: never;
     path: {
@@ -315,8 +575,12 @@ export type BookDestroyErrors = {
 export type BookDestroyError = BookDestroyErrors[keyof BookDestroyErrors];
 
 export type BookDestroyResponses = {
-    200: unknown;
+    200: {
+        message: 'Book deleted successfully';
+    };
 };
+
+export type BookDestroyResponse = BookDestroyResponses[keyof BookDestroyResponses];
 
 export type BookShowData = {
     body?: never;
@@ -363,7 +627,7 @@ export type BookShowResponses = {
 export type BookShowResponse = BookShowResponses[keyof BookShowResponses];
 
 export type BookUpdateData = {
-    body?: never;
+    body?: UpdateBookRequest;
     path: {
         /**
          * The book ID
@@ -422,8 +686,671 @@ export type BookUpdateErrors = {
 export type BookUpdateError = BookUpdateErrors[keyof BookUpdateErrors];
 
 export type BookUpdateResponses = {
-    200: unknown;
+    /**
+     * `BookResource`
+     */
+    200: BookResource;
 };
+
+export type BookUpdateResponse = BookUpdateResponses[keyof BookUpdateResponses];
+
+export type MediaUploadImageData = {
+    body: UploadImageRequest;
+    path?: never;
+    query?: never;
+    url: '/media/upload-image';
+};
+
+export type MediaUploadImageErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+    500: {
+        success: boolean;
+        message: string;
+    } | {
+        success: boolean;
+        message: 'Failed to upload image';
+    };
+};
+
+export type MediaUploadImageError = MediaUploadImageErrors[keyof MediaUploadImageErrors];
+
+export type MediaUploadImageResponses = {
+    200: {
+        success: boolean;
+        message: 'Image uploaded successfully';
+        data: {
+            url: string;
+            path: string;
+            filename: string;
+            size: string;
+            mime_type: string;
+        };
+    };
+};
+
+export type MediaUploadImageResponse = MediaUploadImageResponses[keyof MediaUploadImageResponses];
+
+export type MediaServeImageData = {
+    body?: never;
+    path: {
+        path: string;
+    };
+    query?: never;
+    url: '/media/serve/{path}';
+};
+
+export type MediaServeImageErrors = {
+    400: {
+        success: boolean;
+        message: 'File is not an image';
+    } | {
+        success: boolean;
+        message: 'Invalid image path';
+    };
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    404: {
+        success: boolean;
+        message: 'Image not found';
+    };
+};
+
+export type MediaServeImageError = MediaServeImageErrors[keyof MediaServeImageErrors];
+
+export type MediaServeImageResponses = {
+    /**
+     * Return the image file as a response
+     */
+    200: string;
+};
+
+export type MediaServeImageResponse = MediaServeImageResponses[keyof MediaServeImageResponses];
+
+export type ReviewIndexData = {
+    body?: never;
+    path?: never;
+    query?: {
+        book_id?: number | null;
+        skip?: number | null;
+        take?: number | null;
+        sort_by?: 'created_at' | 'updated_at';
+        sort_order?: 'asc' | 'desc';
+    };
+    url: '/reviews';
+};
+
+export type ReviewIndexErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type ReviewIndexError = ReviewIndexErrors[keyof ReviewIndexErrors];
+
+export type ReviewIndexResponses = {
+    /**
+     * Paginated set of `ReviewResource`
+     */
+    200: {
+        data: Array<ReviewResource>;
+        meta: {
+            authenticated: string;
+            filters: {
+                book_id: string;
+                sort_by: string;
+                sort_order: string;
+            };
+        };
+        links: {
+            first: string | null;
+            last: string | null;
+            prev: string | null;
+            next: string | null;
+        };
+    };
+};
+
+export type ReviewIndexResponse = ReviewIndexResponses[keyof ReviewIndexResponses];
+
+export type ReviewStoreData = {
+    body: StoreReviewRequest;
+    path?: never;
+    query?: never;
+    url: '/reviews';
+};
+
+export type ReviewStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type ReviewStoreError = ReviewStoreErrors[keyof ReviewStoreErrors];
+
+export type ReviewStoreResponses = {
+    /**
+     * `ReviewResource`
+     */
+    200: ReviewResource;
+};
+
+export type ReviewStoreResponse = ReviewStoreResponses[keyof ReviewStoreResponses];
+
+export type ReviewDestroyData = {
+    body?: never;
+    path: {
+        /**
+         * The review ID
+         */
+        review: string;
+    };
+    query?: never;
+    url: '/reviews/{review}';
+};
+
+export type ReviewDestroyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    403: {
+        message: 'Unauthorized';
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type ReviewDestroyError = ReviewDestroyErrors[keyof ReviewDestroyErrors];
+
+export type ReviewDestroyResponses = {
+    200: {
+        message: 'Review deleted successfully';
+    };
+};
+
+export type ReviewDestroyResponse = ReviewDestroyResponses[keyof ReviewDestroyResponses];
+
+export type ReviewShowData = {
+    body?: never;
+    path: {
+        /**
+         * The review ID
+         */
+        review: string;
+    };
+    query?: never;
+    url: '/reviews/{review}';
+};
+
+export type ReviewShowErrors = {
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type ReviewShowError = ReviewShowErrors[keyof ReviewShowErrors];
+
+export type ReviewShowResponses = {
+    /**
+     * `ReviewResource`
+     */
+    200: ReviewResource;
+};
+
+export type ReviewShowResponse = ReviewShowResponses[keyof ReviewShowResponses];
+
+export type ReviewUpdateData = {
+    body: UpdateReviewRequest;
+    path: {
+        /**
+         * The review ID
+         */
+        review: string;
+    };
+    query?: never;
+    url: '/reviews/{review}';
+};
+
+export type ReviewUpdateErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type ReviewUpdateError = ReviewUpdateErrors[keyof ReviewUpdateErrors];
+
+export type ReviewUpdateResponses = {
+    /**
+     * `ReviewResource`
+     */
+    200: ReviewResource;
+};
+
+export type ReviewUpdateResponse = ReviewUpdateResponses[keyof ReviewUpdateResponses];
+
+export type UserLibraryIndexData = {
+    body?: never;
+    path?: never;
+    query?: {
+        skip?: number;
+        take?: number;
+        status?: 'want-to-read' | 'reading' | 'finished';
+        search?: string;
+    };
+    url: '/library';
+};
+
+export type UserLibraryIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type UserLibraryIndexError = UserLibraryIndexErrors[keyof UserLibraryIndexErrors];
+
+export type UserLibraryIndexResponses = {
+    /**
+     * Array of `UserBookResource`
+     */
+    200: {
+        data: Array<UserBookResource>;
+        meta: {
+            total: string;
+            skip: string;
+            take: string;
+            has_more: boolean;
+        };
+    };
+};
+
+export type UserLibraryIndexResponse = UserLibraryIndexResponses[keyof UserLibraryIndexResponses];
+
+export type UserLibraryStoreData = {
+    body: StoreUserBookRequest;
+    path?: never;
+    query?: never;
+    url: '/library';
+};
+
+export type UserLibraryStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    409: {
+        message: 'Book is already in your library.';
+        user_book: UserBookResource;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type UserLibraryStoreError = UserLibraryStoreErrors[keyof UserLibraryStoreErrors];
+
+export type UserLibraryStoreResponses = {
+    /**
+     * `UserBookResource`
+     */
+    200: UserBookResource;
+};
+
+export type UserLibraryStoreResponse = UserLibraryStoreResponses[keyof UserLibraryStoreResponses];
+
+export type UserLibraryDestroyData = {
+    body?: never;
+    path: {
+        /**
+         * The user book ID
+         */
+        userBook: string;
+    };
+    query?: never;
+    url: '/library/{userBook}';
+};
+
+export type UserLibraryDestroyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    403: {
+        message: 'Unauthorized';
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type UserLibraryDestroyError = UserLibraryDestroyErrors[keyof UserLibraryDestroyErrors];
+
+export type UserLibraryDestroyResponses = {
+    200: {
+        message: 'Book removed from library successfully';
+    };
+};
+
+export type UserLibraryDestroyResponse = UserLibraryDestroyResponses[keyof UserLibraryDestroyResponses];
+
+export type UserLibraryShowData = {
+    body?: never;
+    path: {
+        /**
+         * The user book ID
+         */
+        userBook: string;
+    };
+    query?: never;
+    url: '/library/{userBook}';
+};
+
+export type UserLibraryShowErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    403: {
+        message: 'Unauthorized';
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type UserLibraryShowError = UserLibraryShowErrors[keyof UserLibraryShowErrors];
+
+export type UserLibraryShowResponses = {
+    /**
+     * `UserBookResource`
+     */
+    200: UserBookResource;
+};
+
+export type UserLibraryShowResponse = UserLibraryShowResponses[keyof UserLibraryShowResponses];
+
+export type UserLibraryUpdateData = {
+    body?: UpdateUserBookRequest;
+    path: {
+        /**
+         * The user book ID
+         */
+        userBook: string;
+    };
+    query?: never;
+    url: '/library/{userBook}';
+};
+
+export type UserLibraryUpdateErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type UserLibraryUpdateError = UserLibraryUpdateErrors[keyof UserLibraryUpdateErrors];
+
+export type UserLibraryUpdateResponses = {
+    /**
+     * `UserBookResource`
+     */
+    200: UserBookResource;
+};
+
+export type UserLibraryUpdateResponse = UserLibraryUpdateResponses[keyof UserLibraryUpdateResponses];
 
 export type ClientOptions = {
     baseURL: 'http://localhost:8000/api' | 'http://localhost/api' | (string & {});

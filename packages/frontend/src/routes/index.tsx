@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import HeroSection from "../components/Home/HeroSection";
 import FeaturedBooksSection from "../components/Home/FeaturedBooksSection";
-import GenreSection from "../components/Home/GenreSection";
+import LatestBookReviewSection from "../components/Home/LatestBookReviewSection";
 
 const Home = () => {
 	return (
 		<div>
 			<HeroSection />
 			<FeaturedBooksSection />
-			<GenreSection />
+			<LatestBookReviewSection />
 		</div>
 	);
 };

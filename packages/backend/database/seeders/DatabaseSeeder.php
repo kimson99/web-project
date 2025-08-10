@@ -16,5 +16,9 @@ class DatabaseSeeder extends Seeder
         // Create 3000 fake users
         User::factory(3000)->create();
 
+        // Create 100 reviews
+        $this->call([
+            ReviewSeeder::class,
+        ]);
     }
 }

@@ -13,9 +13,10 @@ type SignInFormValues = z.infer<typeof signinSchema>;
 
 interface SignInFormProps {
 	onSignInSuccess?: () => void;
+	onSwitchToSignUp?: () => void;
 }
 
-const SignInForm = ({ onSignInSuccess }: SignInFormProps) => {
+const SignInForm = ({ onSignInSuccess, onSwitchToSignUp }: SignInFormProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -57,6 +58,20 @@ const SignInForm = ({ onSignInSuccess }: SignInFormProps) => {
 					</button>
 				</fieldset>
 			</form>
+			
+			{onSwitchToSignUp && (
+				<div className="text-center mt-4">
+					<p className="text-sm text-base-content/70">
+						Don't have an account?{" "}
+						<button
+							onClick={onSwitchToSignUp}
+							className="text-primary hover:underline font-medium"
+						>
+							Sign up
+						</button>
+					</p>
+				</div>
+			)}
 		</div>
 	);
 };

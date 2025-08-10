@@ -1,11 +1,31 @@
-# Web Project
+# BookReview Platform
 
-A modern full-stack web application built with React and Laravel.
+A comprehensive book review and library management platform built with React and Laravel. Users can discover books, write reviews, track their reading progress, and manage their personal libraries.
 
-## Tech Stack
+## 📚 Features
+
+### Core Functionality
+- **Book Discovery** - Browse and search through a vast collection of books
+- **User Reviews** - Write and read detailed book reviews
+- **Personal Library** - Track books you're reading, want to read, or have completed
+- **Reading Progress** - Monitor current page and take notes while reading
+- **Rating System** - Rate books and see average ratings from other users
+- **Book Information** - Detailed book data including authors, genres, ISBN, publication year
+
+### User Features
+- **Authentication** - Secure user registration and login
+- **User Profiles** - Customizable profiles with avatars
+- **Library Management** - Organize books by reading status
+- **Personal Notes** - Add private notes to your books
+
+### Admin Features
+- **Book Management** - Add, edit, and manage book catalog
+- **User Management** - Administrative controls
+- **Review Moderation** - Manage user-generated content
+
+## 🛠 Tech Stack
 
 ### Frontend
-
 - **React 19** - Modern React with concurrent features
 - **TypeScript** - Type-safe JavaScript
 - **Vite** - Fast build tool and dev server
@@ -15,31 +35,24 @@ A modern full-stack web application built with React and Laravel.
 - **Zod** - TypeScript-first schema validation
 - **Tailwind CSS** - Utility-first CSS framework
 - **DaisyUI** - Component library for Tailwind CSS
-- **Axios** - HTTP client
 
 ### Backend
-
 - **Laravel 12** - Modern PHP framework
 - **PHP 8.2+** - Latest PHP features
 - **Laravel Sanctum** - API authentication
 - **MySQL** - Database
 - **Scramble** - API documentation generator
 
-### Development Tools
+### External APIs
+- **OpenLibrary API** - Book data and cover images
+- **Book Scraper** - Python-based data collection tool
 
+### Development Tools
 - **pnpm** - Fast, disk space efficient package manager
 - **Lefthook** - Git hooks for code quality
 - **ESLint** - Code linting
 - **TypeScript** - Type safety across the stack
-
-### API Layer
-
 - **Generated TypeScript Client** - Auto-generated from OpenAPI spec
-- **HeyAPI** - Client generation tool
-
-## Project Overview
-
-_[To be decided]_
 
 ## Prerequisites
 

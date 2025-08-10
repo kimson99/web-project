@@ -1,12 +1,7 @@
 const HeroSection = () => {
 	return (
-		<div
-			className="hero min-h-[80vh]"
-			style={{
-				backgroundImage: "url(https://picsum.photos/1920/1080)",
-			}}
-		>
-			<div className="hero-overlay"></div>
+		<div className="flex items-center justify-center min-h-[80vh] bg-[url(./hero.jpg)] bg-cover bg-center bg-black/30 bg-blend-overlay">
+			<div className=""></div>
 			<div className="hero-content text-neutral-content text-center">
 				<div className="max-w-md">
 					<h1 className="mb-5 text-5xl font-bold">Hello there</h1>

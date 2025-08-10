@@ -11,16 +11,23 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { API_URL } from "../config/constant";
 
 interface AuthProps {
 	onSignUpSuccess?: () => void;
 	onSignInSuccess?: () => void;
 }
 
-const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
-	const [user, setUser] = useState<UserResource | undefined>(undefined);
+interface User {
+	id: string;
+	name: string;
+	avatar: string | null;
+}
 
-	const { data: getMeResponse } = useQuery({
+const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
+	const [user, setUser] = useState<User | undefined>(undefined);
+
+	const { data: getMeResponse, isLoading: isLoadingUser } = useQuery({
 		queryKey: ["me"],
 		queryFn: () => {
 			return authGetMe();
@@ -29,9 +36,14 @@ const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
 		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
 	});
 
+	const handleSetUser = (data: UserResource) => {
+		const avatar = data.avatar_path ? `${API_URL}/${data.avatar_path}` : null;
+		setUser({ id: data.id, name: data.name, avatar });
+	};
+
 	useEffect(() => {
 		if (getMeResponse?.data) {
-			setUser(getMeResponse.data);
+			handleSetUser(getMeResponse.data);
 		}
 	}, [getMeResponse]);
 
@@ -79,7 +91,7 @@ const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
 			toast.success("Account login");
 			onSignInSuccess?.();
 			if (data.data) {
-				setUser(data.data);
+				handleSetUser(data.data);
 			}
 		},
 	});
@@ -99,6 +111,7 @@ const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
 		mutateRegister,
 		mutateLogin,
 		mutateLogout,
+		isLoadingUser,
 	};
 };
 

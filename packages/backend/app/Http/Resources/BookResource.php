@@ -25,14 +25,15 @@ class BookResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'average_rating' => $this->average_rating,
-            'cover_image_path' => $this->cover_image_path,
+            'cover_image_url' => $this->cover_image_url,
+            /** @var array<int, array{id: string, name: string, avatar_image_path: string|null}> */
             'authors' => $this->authors->map(function ($author) {
                 return [
                     'id' => $author->id,
                     'name' => $author->name,
                     'avatar_image_path' => $author->avatar_image_path,
                 ];
-            }),
+            })->values(),
             'num_pages' => $this->num_pages,
             'published_year' => $this->published_year,
             'is_added_by_system' => $this->is_added_by_system,
@@ -51,7 +52,7 @@ class BookResource extends JsonResource
                 'reading_status' => $userBook->status ? $userBook->status : null,
                 'current_page' => $userBook->current_page ? $userBook->current_page : null,
                 'notes' => $userBook->notes ? $userBook->notes : null,
-                'user_rating' => $userRating->rating ? $userRating->rating : null
+                'user_rating' => $userRating?->rating ? $userRating->rating : null
             ] : null;
         }
 

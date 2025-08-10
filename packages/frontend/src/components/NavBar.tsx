@@ -1,11 +1,14 @@
 import { useLocation } from "@tanstack/react-router";
-import useAuth from "../providers/useAuth";
+import { FaChevronDown } from "react-icons/fa6";
+import { useAuthContext } from "../providers/useAuthContext";
+import Avatar from "./Avatar";
 
 interface NavBarItem {
 	id: string;
 	label: string;
 	path: string;
 }
+
 const navBarItems: NavBarItem[] = [
 	{
 		id: "home",
@@ -24,145 +27,160 @@ const navBarItems: NavBarItem[] = [
 	},
 ];
 
+const SearchInput = ({ className = "" }: { className?: string }) => (
+	<label className={`input ${className}`}>
+		<svg
+			className="h-[1em] opacity-50"
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+		>
+			<g
+				strokeLinejoin="round"
+				strokeLinecap="round"
+				strokeWidth="2.5"
+				fill="none"
+				stroke="currentColor"
+			>
+				<circle cx="11" cy="11" r="8"></circle>
+				<path d="m21 21-4.3-4.3"></path>
+			</g>
+		</svg>
+		<input type="search" required placeholder="Search" />
+	</label>
+);
+
+const MobileMenuButton = () => (
+	<div className="flex">
+		<div tabIndex={0} role="button" className="btn btn-ghost md:hidden">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				className="h-5 w-5"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth="2"
+					d="M4 6h16M4 12h8m-8 6h16"
+				/>
+			</svg>
+		</div>
+	</div>
+);
+
+const MobileDropdown = () => (
+	<ul
+		tabIndex={0}
+		className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+	>
+		<li>
+			<SearchInput className="md:hidden" />
+		</li>
+		{navBarItems.map((item) => (
+			<li key={item.id}>
+				<a href={item.path}>{item.label}</a>
+			</li>
+		))}
+	</ul>
+);
+
+const DesktopNavItems = () => (
+	<div id="desktop-nav-items" className="flex max-sm:hidden">
+		<ul className="flex items-center justify-start gap-4">
+			{navBarItems.map((item) => (
+				<li key={item.id} className="whitespace-nowrap px-2">
+					<a href={item.path}>{item.label}</a>
+				</li>
+			))}
+		</ul>
+	</div>
+);
+
+const UserDropdown = ({
+	user,
+	onSignOut,
+}: {
+	user: { id: string; name: string; avatar: string | null };
+	onSignOut: () => void;
+}) => (
+	<div className="navbar-end mr-4">
+		<div className="dropdown dropdown-end">
+			<div
+				className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 cursor-pointer transition-colors"
+				role="button"
+				tabIndex={1}
+			>
+				<Avatar name={user.name} src={user.avatar} className="w-8" />
+				<div className="flex flex-col items-start max-sm:hidden">
+					<span className="text-sm font-medium">{user.name}</span>
+				</div>
+				<FaChevronDown className="text-xs text-base-content/60" />
+			</div>
+			<ul
+				tabIndex={1}
+				className="dropdown-content menu bg-base-100 rounded-box z-[1000] w-56 p-2 shadow-lg border border-base-300 mt-2"
+			>
+				<li className="menu-title px-3 py-2">
+					<span className="text-xs text-base-content/70">Account</span>
+				</li>
+				<li>
+					<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
+						<span>Profile</span>
+					</a>
+				</li>
+				<li>
+					<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
+						<span>Settings</span>
+					</a>
+				</li>
+				<li className="border-t border-base-300 mt-2 pt-2">
+					<button 
+						onClick={onSignOut}
+						className="px-3 py-2 rounded-md hover:bg-error/10 hover:text-error transition-colors text-left w-full"
+					>
+						<span>Sign Out</span>
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+);
+
+const GuestNavItems = () => (
+	<div className="navbar-end gap-4">
+		<SearchInput className="max-sm:hidden ml-4 w-96" />
+		<a href="/auth/signin" className="btn btn-primary max-sm:btn-sm">
+			Sign In
+		</a>
+	</div>
+);
+
 const NavBar = () => {
 	const location = useLocation();
 	const isAuthRoute = location.pathname.startsWith("/auth");
+	const { user, isLoadingUser, mutateLogout } = useAuthContext();
 
-	const { user } = useAuth({});
+	const handleSignOut = () => {
+		mutateLogout();
+	};
 
 	return (
 		<nav className="navbar bg-base-100 shadow-sm">
 			<div className="navbar-start">
 				<div className="dropdown">
-					<div className="flex">
-						<div tabIndex={0} role="button" className="btn btn-ghost md:hidden">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								{" "}
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M4 6h16M4 12h8m-8 6h16"
-								/>{" "}
-							</svg>
-						</div>
-						<button className="btn btn-ghost md:hidden" tabIndex={0}>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								{" "}
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								/>{" "}
-							</svg>
-						</button>
-					</div>
-					<ul
-						tabIndex={0}
-						className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-					>
-						<li>
-							<label className="input md:hidden">
-								<svg
-									className="h-[1em] opacity-50"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-								>
-									<g
-										strokeLinejoin="round"
-										strokeLinecap="round"
-										strokeWidth="2.5"
-										fill="none"
-										stroke="currentColor"
-									>
-										<circle cx="11" cy="11" r="8"></circle>
-										<path d="m21 21-4.3-4.3"></path>
-									</g>
-								</svg>
-								<input type="search" required placeholder="Search" />
-							</label>
-						</li>
-						{navBarItems.map((item) => (
-							<li key={item.id}>
-								<a href={item.path}>{item.label}</a>
-							</li>
-						))}
-					</ul>
+					<MobileMenuButton />
+					<MobileDropdown />
 				</div>
 				<a href="/" className="btn btn-ghost text-xl">
-					Name
+					Logo
 				</a>
-				<div id="desktop-nav-items" className="flex max-sm:hidden">
-					<ul className="flex items-center justify-start gap-4">
-						{navBarItems.map((item) => (
-							<li key={item.id} className="whitespace-nowrap px-2">
-								<a href={item.path}>{item.label}</a>
-							</li>
-						))}
-					</ul>
-				</div>
+				<DesktopNavItems />
 			</div>
-			{!!user && (
-				<div className="navbar-end mr-4">
-					<div className="dropdown">
-						<div className="avatar btn" role="button" tabIndex={1}>
-							<div className="w-10 rounded-xl">
-								<img alt="avatar" src={"https://picsum.photos/96/96"} />
-							</div>
-						</div>
-						<ul
-							tabIndex={1}
-							className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-						>
-							<li>
-								<a>Item 1</a>
-							</li>
-							<li>
-								<a>Item 2</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			)}
-			{!isAuthRoute && !user && (
-				<div className="navbar-end gap-4">
-					<label className="max-sm:hidden input ml-4 w-96">
-						<svg
-							className="h-[1em] opacity-50"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-						>
-							<g
-								strokeLinejoin="round"
-								strokeLinecap="round"
-								strokeWidth="2.5"
-								fill="none"
-								stroke="currentColor"
-							>
-								<circle cx="11" cy="11" r="8"></circle>
-								<path d="m21 21-4.3-4.3"></path>
-							</g>
-						</svg>
-						<input type="search" required placeholder="Search" />
-					</label>
-					<a href="/auth/signin" className="btn btn-primary max-sm:btn-sm">
-						Sign In
-					</a>
-				</div>
-			)}
+
+			{!!user && !isLoadingUser && <UserDropdown user={user} onSignOut={handleSignOut} />}
+			{!isAuthRoute && !user && <GuestNavItems />}
 		</nav>
 	);
 };
