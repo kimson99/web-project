@@ -28,6 +28,7 @@ class Review extends Model
         'user_id',
         'book_id',
         'content',
+        'rating',
     ];
 
     /**

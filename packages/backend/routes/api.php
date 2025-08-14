@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ReviewController;
@@ -20,7 +21,12 @@ Route::prefix('auth')->name('auth.')->group(function() {
 
 // Public book browsing
 Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{book}', [BookController::class, 'show']);
 Route::get('/books/genres', [BookController::class, 'genres']);
+
+// Public author browsing
+Route::get('/authors', [AuthorController::class, 'index']);
+Route::get('/authors/{author}', [AuthorController::class, 'show']);
 
 // Public review browsing
 Route::get('/reviews', [ReviewController::class, 'index']);
@@ -41,9 +47,6 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::delete('/{book}', [BookController::class, 'destroy']);
     });
 
-    Route::prefix('books')->name('books.')->group(function() {
-        Route::get('/{book}', [BookController::class, 'show']);
-    });
 
     // Media
     Route::prefix('media')->name('media.')->group(function() {

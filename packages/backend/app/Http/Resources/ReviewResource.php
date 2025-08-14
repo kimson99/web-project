@@ -16,13 +16,13 @@ class ReviewResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'content' => $this->content,
+            'rating' => $this->rating,
             'user_id' => $this->user_id,
             'book_id' => $this->book_id,
             'user' => $this->whenLoaded('user', function () {
@@ -31,7 +31,6 @@ class ReviewResource extends JsonResource
                     'name' => $this->user->name,
                     'email' => $this->user->email,
                     'avatar_path' => $this->user->avatar_path,
-                    'rating' => $this->book->userRatings?->first()?->rating ?? 0
                 ];
             }),
             'book' => $this->whenLoaded('book', function () {
@@ -40,12 +39,7 @@ class ReviewResource extends JsonResource
                     'title' => $this->book->title,
                     'cover_image_url' => $this->book->cover_image_url,
                     'authors' => $this->when($this->book->relationLoaded('authors'), function () {
-                        return $this->book->authors->map(function ($author) {
-                            return [
-                                'id' => $author->id,
-                                'name' => $author->name,
-                            ];
-                        });
+                        return AuthorResource::collection($this->book->authors);
                     })
                 ];
             }),

@@ -18,7 +18,7 @@ interface AuthProps {
 	onSignInSuccess?: () => void;
 }
 
-interface User {
+export interface User {
 	id: string;
 	name: string;
 	avatar: string | null;

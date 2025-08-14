@@ -22,7 +22,7 @@ class IndexReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'book_id' => ['nullable', 'integer', 'exists:books,id'],
+            'book_id' => ['nullable', 'string', 'exists:books,id'],
             'skip' => ['nullable', 'integer', 'min:0'],
             'take' => ['nullable', 'integer', 'min:1', 'max:100'],
             'sort_by' => ['nullable', 'string', 'in:created_at,updated_at'],

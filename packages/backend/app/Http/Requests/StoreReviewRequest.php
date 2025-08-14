@@ -23,7 +23,8 @@ class StoreReviewRequest extends FormRequest
     {
         return [
             'book_id' => ['required', 'string', 'exists:books,id'],
-            'content' => ['required', 'string', 'max:1000'],
+            'content' => ['nullable', 'string', 'max:1000'],
+            'rating' => ['required', 'integer', 'between:1,5'],
         ];
     }
 
@@ -38,9 +39,11 @@ class StoreReviewRequest extends FormRequest
             'book_id.required' => 'Book ID is required.',
             'book_id.string' => 'Book ID must be a string.',
             'book_id.exists' => 'The specified book does not exist.',
-            'content.required' => 'Review content is required.',
             'content.string' => 'Review content must be a string.',
             'content.max' => 'Review content cannot exceed 1000 characters.',
+            'rating.required' => 'Rating is required.',
+            'rating.integer' => 'Rating must be a number.',
+            'rating.between' => 'Rating must be between 1 and 5.',
         ];
     }
 } 

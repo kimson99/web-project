@@ -23,7 +23,7 @@ class StoreUserBookRequest extends FormRequest
     {
         return [
             'book_id' => ['required', 'string', 'exists:books,id'],
-            'notes' => ['nullable', 'string', 'max:1000'],
+            'notes' => ['string', 'max:1000'],
             'current_page' => ['nullable', 'integer', 'min:0'],
             'status' => ['nullable', 'string', 'in:want-to-read,reading,finished'],
         ];

@@ -1,16 +1,19 @@
-import { bookIndex } from "@repo/api";
-import { useQuery } from "@tanstack/react-query";
+import { bookIndex, userLibraryStore } from "@repo/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import BookCover from "../BookCover";
 import Modal from "../Modal";
 import SignInForm from "../SignInForm";
 import SignUpForm from "../SignUpForm";
 import { useAuthContext } from "../../providers/useAuthContext";
+import { useNavigate } from "@tanstack/react-router";
 
 const FeaturedBooksSection = () => {
 	const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 	const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
 	const { user } = useAuthContext();
+	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
 	const { data: featuredBooks, isLoading } = useQuery({
 		queryKey: ["featured-books"],
@@ -26,14 +29,33 @@ const FeaturedBooksSection = () => {
 		},
 	});
 
+	const addToLibraryMutation = useMutation({
+		mutationFn: (bookId: string) =>
+			userLibraryStore({
+				body: {
+					book_id: bookId,
+					status: "want-to-read" as const,
+				},
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["featured-books"] });
+		},
+		onError: (error: Error) => {
+			console.error("Failed to add book to library:", error);
+		},
+	});
+
 	const handleAddBook = (bookId: string) => {
 		if (!user) {
 			setAuthMode("signin");
 			setIsAuthModalOpen(true);
 			return;
 		}
-		// TODO: Add book to user's library
-		console.log("Add book to library:", bookId);
+		addToLibraryMutation.mutate(bookId);
+	};
+
+	const handleNavToBookDetail = (bookId: string) => {
+		navigate({ to: `/books/${bookId}` });
 	};
 
 	const handleAuthSuccess = () => {
@@ -94,32 +116,55 @@ const FeaturedBooksSection = () => {
 					{featuredBooks?.data?.data?.slice(0, 6).map((book) => (
 						<div
 							key={book.id}
-							className="bg-base-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-300 w-[180px] flex-shrink-0"
+							className="bg-base-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-300 w-[180px] flex-shrink-0 flex flex-col"
 						>
 							<BookCover
-								className="w-full h-[240px] mb-3"
+								className="w-full h-[240px] mb-3 cursor-pointer"
 								title={book.title}
-								src={book.cover_image_url}
+								src={book.cover_image_url || undefined}
+								onClick={() => handleNavToBookDetail(book.id)}
 							/>
-							<div>
-								<h3 className="font-medium text-sm line-clamp-2 mb-1">
-									{book.title}
+							
+							{/* Title section - fixed height */}
+							<div className="mb-3 h-[32px] flex items-start">
+								<h3 className="font-medium text-sm line-clamp-2 leading-tight">
+									<a href={`/books/${book.id}`} className="hover:text-primary">
+										{book.title}
+									</a>
 								</h3>
-								<p className="text-xs text-base-content/70 mb-3">
-									by {book.authors?.[0]?.name || "Unknown Author"}
+							</div>
+							
+							{/* Author section - fixed height */}
+							<div className="mb-4 h-[16px] flex items-center">
+								<p className="text-xs text-base-content/70 truncate">
+									by{" "}
+									<a href={`/authors/${book.authors?.[0]?.id}`} className="hover:text-primary">
+										{book.authors?.[0]?.name || "Unknown Author"}
+									</a>
 								</p>
+							</div>
+							
+							{/* Rating and Action section - always at bottom */}
+							<div className="mt-auto">
 								<div className="flex items-center justify-between">
-									<div className="flex items-center gap-1 mt-1">
+									<div className="flex items-center gap-1">
 										<div className="mask mask-star bg-warning w-3 h-3"></div>
 										<span className="text-xs text-base-content/70">
 											{book.average_rating.toFixed(1) || "N/A"}
 										</span>
 									</div>
 									<button
-										className="btn btn-primary btn-xs"
+										className={`btn btn-xs ${book.user_data?.reading_status ? 'btn-success' : 'btn-primary'}`}
 										onClick={() => handleAddBook(book.id)}
+										disabled={book.user_data?.reading_status ? true : (addToLibraryMutation.isPending && addToLibraryMutation.variables === book.id)}
 									>
-										Add
+										{addToLibraryMutation.isPending && addToLibraryMutation.variables === book.id ? (
+											<span className="loading loading-spinner loading-xs"></span>
+										) : book.user_data?.reading_status ? (
+											"In Library"
+										) : (
+											"Add"
+										)}
 									</button>
 								</div>
 							</div>
@@ -128,7 +173,9 @@ const FeaturedBooksSection = () => {
 				</div>
 
 				<div className="text-center mt-12">
-					<button className="btn btn-primary btn-lg">View All Books</button>
+					<a href="/browse" className="btn btn-primary btn-lg">
+						View All Books
+					</a>
 				</div>
 
 				<Modal

@@ -1,5 +1,6 @@
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { FaChevronDown } from "react-icons/fa6";
+import { useState } from "react";
 import { useAuthContext } from "../providers/useAuthContext";
 import Avatar from "./Avatar";
 
@@ -27,27 +28,44 @@ const navBarItems: NavBarItem[] = [
 	},
 ];
 
-const SearchInput = ({ className = "" }: { className?: string }) => (
-	<label className={`input ${className}`}>
-		<svg
-			className="h-[1em] opacity-50"
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-		>
-			<g
-				strokeLinejoin="round"
-				strokeLinecap="round"
-				strokeWidth="2.5"
-				fill="none"
-				stroke="currentColor"
+const SearchInput = ({ className = "" }: { className?: string }) => {
+	const [searchValue, setSearchValue] = useState("");
+	const navigate = useNavigate();
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (searchValue.trim()) {
+			navigate({ to: "/browse", search: { q: searchValue } });
+		}
+	};
+
+	return (
+		<form onSubmit={handleSearch} className={`input ${className}`}>
+			<svg
+				className="h-[1em] opacity-50"
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
 			>
-				<circle cx="11" cy="11" r="8"></circle>
-				<path d="m21 21-4.3-4.3"></path>
-			</g>
-		</svg>
-		<input type="search" required placeholder="Search" />
-	</label>
-);
+				<g
+					strokeLinejoin="round"
+					strokeLinecap="round"
+					strokeWidth="2.5"
+					fill="none"
+					stroke="currentColor"
+				>
+					<circle cx="11" cy="11" r="8"></circle>
+					<path d="m21 21-4.3-4.3"></path>
+				</g>
+			</svg>
+			<input 
+				type="search" 
+				placeholder="Search books & authors..." 
+				value={searchValue}
+				onChange={(e) => setSearchValue(e.target.value)}
+			/>
+		</form>
+	);
+};
 
 const MobileMenuButton = () => (
 	<div className="flex">
@@ -70,21 +88,28 @@ const MobileMenuButton = () => (
 	</div>
 );
 
-const MobileDropdown = () => (
-	<ul
-		tabIndex={0}
-		className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-	>
-		<li>
-			<SearchInput className="md:hidden" />
-		</li>
-		{navBarItems.map((item) => (
-			<li key={item.id}>
-				<a href={item.path}>{item.label}</a>
-			</li>
-		))}
-	</ul>
-);
+const MobileDropdown = () => {
+	const location = useLocation();
+	const isBrowsePage = location.pathname === '/browse';
+	
+	return (
+		<ul
+			tabIndex={0}
+			className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+		>
+			{!isBrowsePage && (
+				<li>
+					<SearchInput className="md:hidden" />
+				</li>
+			)}
+			{navBarItems.map((item) => (
+				<li key={item.id}>
+					<a href={item.path}>{item.label}</a>
+				</li>
+			))}
+		</ul>
+	);
+};
 
 const DesktopNavItems = () => (
 	<div id="desktop-nav-items" className="flex max-sm:hidden">
@@ -148,14 +173,19 @@ const UserDropdown = ({
 	</div>
 );
 
-const GuestNavItems = () => (
-	<div className="navbar-end gap-4">
-		<SearchInput className="max-sm:hidden ml-4 w-96" />
-		<a href="/auth/signin" className="btn btn-primary max-sm:btn-sm">
-			Sign In
-		</a>
-	</div>
-);
+const GuestNavItems = () => {
+	const location = useLocation();
+	const isBrowsePage = location.pathname === '/browse';
+	
+	return (
+		<div className="navbar-end gap-4">
+			{!isBrowsePage && <SearchInput className="max-sm:hidden ml-4 w-96" />}
+			<a href="/auth/signin" className="btn btn-primary max-sm:btn-sm">
+				Sign In
+			</a>
+		</div>
+	);
+};
 
 const NavBar = () => {
 	const location = useLocation();

@@ -325,6 +325,137 @@
                 }
             }
         },
+        "/authors": {
+            "get": {
+                "operationId": "author.index",
+                "summary": "Display a listing of authors",
+                "tags": [
+                    "Author"
+                ],
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "take",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 255
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `AuthorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AuthorResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "string"
+                                                },
+                                                "skip": {
+                                                    "type": "string"
+                                                },
+                                                "take": {
+                                                    "type": "string"
+                                                },
+                                                "has_more": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "total",
+                                                "skip",
+                                                "take",
+                                                "has_more"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/authors/{author}": {
+            "get": {
+                "operationId": "author.show",
+                "summary": "Display the specified author",
+                "tags": [
+                    "Author"
+                ],
+                "parameters": [
+                    {
+                        "name": "author",
+                        "in": "path",
+                        "required": true,
+                        "description": "The author ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AuthorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
         "/books": {
             "get": {
                 "operationId": "book.index",
@@ -530,36 +661,41 @@
                 }
             }
         },
-        "/books/genres": {
+        "/books/{book}": {
             "get": {
-                "operationId": "book.genres",
-                "summary": "Get available genres for filtering",
+                "operationId": "book.show",
+                "summary": "Display the specified resource",
                 "tags": [
                     "Book"
                 ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`BookResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "genres": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "genres"
-                                    ]
+                                    "$ref": "#/components/schemas/BookResource"
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     }
                 }
-            }
-        },
-        "/books/{book}": {
+            },
             "put": {
                 "operationId": "book.update",
                 "summary": "Update the specified resource in storage",
@@ -659,41 +795,33 @@
                         "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
-            },
+            }
+        },
+        "/books/genres": {
             "get": {
-                "operationId": "book.show",
-                "summary": "Display the specified resource",
+                "operationId": "book.genres",
+                "summary": "Get available genres for filtering",
                 "tags": [
                     "Book"
                 ],
-                "parameters": [
-                    {
-                        "name": "book",
-                        "in": "path",
-                        "required": true,
-                        "description": "The book ID",
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "`BookResource`",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BookResource"
+                                    "type": "object",
+                                    "properties": {
+                                        "genres": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "genres"
+                                    ]
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -942,7 +1070,7 @@
                         "in": "query",
                         "schema": {
                             "type": [
-                                "integer",
+                                "string",
                                 "null"
                             ]
                         }
@@ -1642,6 +1770,46 @@
     },
     "components": {
         "schemas": {
+            "AuthorResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "external_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "avatar_image_path": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "external_id",
+                    "name",
+                    "avatar_image_path",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "AuthorResource"
+            },
             "BookResource": {
                 "type": "object",
                 "properties": {
@@ -1658,31 +1826,15 @@
                         "type": "number"
                     },
                     "cover_image_url": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "authors": {
                         "type": "array",
                         "items": {
-                            "type": "object",
-                            "properties": {
-                                "id": {
-                                    "type": "string"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "avatar_image_path": {
-                                    "type": [
-                                        "string",
-                                        "null"
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "id",
-                                "name",
-                                "avatar_image_path"
-                            ]
+                            "$ref": "#/components/schemas/AuthorResource"
                         }
                     },
                     "num_pages": {
@@ -1710,6 +1862,28 @@
                     "updated_at": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "user_data": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "reading_status": {
+                                "type": "string"
+                            },
+                            "current_page": {
+                                "type": "string"
+                            },
+                            "notes": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "reading_status",
+                            "current_page",
+                            "notes"
+                        ]
                     }
                 },
                 "required": [
@@ -1725,7 +1899,8 @@
                     "book_status",
                     "added_by",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "user_data"
                 ],
                 "title": "BookResource"
             },
@@ -1820,6 +1995,12 @@
                     "content": {
                         "type": "string"
                     },
+                    "rating": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "user_id": {
                         "type": "string"
                     },
@@ -1843,17 +2024,13 @@
                                     "string",
                                     "null"
                                 ]
-                            },
-                            "rating": {
-                                "type": "string"
                             }
                         },
                         "required": [
                             "id",
                             "name",
                             "email",
-                            "avatar_path",
-                            "rating"
+                            "avatar_path"
                         ]
                     },
                     "book": {
@@ -1869,7 +2046,10 @@
                                 "type": "string"
                             },
                             "authors": {
-                                "type": "string"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/AuthorResource"
+                                }
                             }
                         },
                         "required": [
@@ -1890,6 +2070,7 @@
                 "required": [
                     "id",
                     "content",
+                    "rating",
                     "user_id",
                     "book_id",
                     "created_at",
@@ -1949,13 +2130,19 @@
                         "type": "string"
                     },
                     "content": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 1000
+                    },
+                    "rating": {
+                        "type": "integer"
                     }
                 },
                 "required": [
                     "book_id",
-                    "content"
+                    "rating"
                 ],
                 "title": "StoreReviewRequest"
             },
@@ -1966,10 +2153,7 @@
                         "type": "string"
                     },
                     "notes": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
+                        "type": "string",
                         "maxLength": 1000
                     },
                     "current_page": {
@@ -2037,12 +2221,18 @@
                 "type": "object",
                 "properties": {
                     "content": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 1000
+                    },
+                    "rating": {
+                        "type": "integer"
                     }
                 },
                 "required": [
-                    "content"
+                    "rating"
                 ],
                 "title": "UpdateReviewRequest"
             },

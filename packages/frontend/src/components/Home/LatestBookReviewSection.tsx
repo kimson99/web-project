@@ -1,9 +1,14 @@
 import { bookIndex, reviewIndex, type ReviewResource } from "@repo/api";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import Avatar from "../Avatar";
 import { cn } from "../../libs/utils";
 import BookCover from "../BookCover";
+
+dayjs.extend(relativeTime);
 
 interface ReviewCardProps {
 	review: ReviewResource;
@@ -34,17 +39,30 @@ interface BookCardProps {
 		id: string;
 		title: string;
 		average_rating?: number;
+		cover_image_url: string | null;
 	};
 }
 
 const BookCard = ({ book }: BookCardProps) => {
+	const navigate = useNavigate();
 	const rating = book.average_rating || 0;
 
+	const handleNavToBookDetail = () => {
+		navigate({ to: `/books/${book.id}` });
+	};
+
 	return (
-		<div className="w-full rounded-lg bg-base-200 flex gap-3 p-3">
-			<BookCover title={book.title} src={book.cover_image_url} />
+		<div
+			className="w-full rounded-lg bg-base-200 flex gap-3 p-3 hover:shadow-md transition-shadow cursor-pointer"
+			onClick={handleNavToBookDetail}
+		>
+			<BookCover
+				title={book.title}
+				src={book.cover_image_url || undefined}
+				className="cursor-pointer"
+			/>
 			<div className="flex-1 min-w-0">
-				<div className="text-sm font-medium line-clamp-2 leading-tight">
+				<div className="text-sm font-medium line-clamp-2 leading-tight hover:text-primary transition-colors">
 					{book.title}
 				</div>
 				<div className="flex items-center gap-1 mt-1">
@@ -59,32 +77,61 @@ const BookCard = ({ book }: BookCardProps) => {
 };
 
 const ReviewCard = ({ review }: ReviewCardProps) => {
+	const navigate = useNavigate();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const contentLength = review.content.length;
 	const shouldShowReadMore = contentLength > 500;
+
+	const handleNavToBookDetail = () => {
+		if (review.book?.id) {
+			navigate({ to: `/books/${review.book.id}` });
+		}
+	};
+
+	const handleNavToUserProfile = () => {
+		if (review.user?.id) {
+			navigate({ to: `/profiles/${review.user.id}` });
+		}
+	};
 
 	return (
 		<div className="w-full rounded-lg bg-base-200 flex flex-col justify-center py-4">
 			<div className="flex">
 				<BookCover
-					className="min-w-[80px] min-h-[120px]"
+					className="min-w-[80px] min-h-[120px] cursor-pointer"
 					title={review.book?.title || ""}
-					src={review.book.cover_image_url}
+					src={review?.book?.cover_image_url}
+					onClick={handleNavToBookDetail}
 				/>
 
 				<div className="ml-4 flex-1">
 					<div className="flex gap-2 items-center mb-2">
-						<div className="text-lg font-semibold">{review.book?.title}</div>
-						<Rating activeIdx={parseInt(review.user?.rating || "0")} />
+						<div
+							className="text-lg font-semibold cursor-pointer hover:text-primary transition-colors"
+							onClick={handleNavToBookDetail}
+						>
+							{review.book?.title}
+						</div>
+						<Rating activeIdx={parseInt(review.rating?.toString() || "0")} />
 					</div>
 					<div className="flex items-center gap-2 mb-2">
 						<Avatar
 							name={review.user?.name || ""}
 							src={review.user?.avatar_path || ""}
-							className="w-5"
+							className="w-5 cursor-pointer hover:opacity-80 transition-opacity"
 							textClassName="text-xs"
+							onClick={handleNavToUserProfile}
 						/>
-						<div className="text-sm">{review.user?.name}</div>
+						<div
+							className="text-sm cursor-pointer hover:text-primary transition-colors"
+							onClick={handleNavToUserProfile}
+						>
+							{review.user?.name}
+						</div>
+						<span className="text-xs text-base-content/50">•</span>
+						<span className="text-xs text-base-content/70">
+							{dayjs(review.created_at).fromNow()}
+						</span>
 					</div>
 
 					<div className="text-sm text-base-content/70">

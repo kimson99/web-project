@@ -2,7 +2,7 @@ import { FaTwitter, FaYoutube, FaFacebook } from "react-icons/fa6";
 
 const Footer = () => {
 	return (
-		<footer className="flex flex-col justify-around md:flex-row footer footer-center p-10 bg-base-200 text-base-content">
+		<footer className="flex flex-col justify-around md:flex-row footer footer-center p-6 bg-base-200 text-base-content">
 			<div className="grid grid-flow-row md:grid-flow-col  gap-4">
 				<a className="link link-hover">About us</a>
 				<a className="link link-hover">Contact</a>

@@ -70,9 +70,6 @@ class BookController
             $books->load([
                 'userBooks' => function ($query) use ($userId) {
                     $query->where('user_id', $userId);
-                },
-                'userRatings' => function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
                 }
             ]);
         }
@@ -139,6 +136,20 @@ class BookController
      */
     public function show(Book $book)
     {
+        // Load relationships for detailed view
+        $book->load(['authors', 'genres', 'reviews.user']);
+        
+        // If user is authenticated, load user-specific data
+        if (auth()->check()) {
+            $userId = auth()->id();
+            
+            $book->load([
+                'userBooks' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }
+            ]);
+        }
+        
         return new BookResource($book);
     }
 

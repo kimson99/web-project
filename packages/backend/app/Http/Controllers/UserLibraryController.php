@@ -78,7 +78,7 @@ class UserLibraryController
         $userBook = UserBook::create([
             'user_id' => $userId,
             'book_id' => $request->validated('book_id'),
-            'notes' => $request->validated('notes'),
+            'notes' => $request->validated('notes', ''),
             'start_date' => $request->validated('start_date'),
             'current_page' => $request->validated('current_page', 0),
             'status' => $request->validated('status', 'want-to-read'),

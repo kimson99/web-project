@@ -49,9 +49,6 @@ class ReviewController
                 'book.authors',
                 'book.userBooks' => function ($query) use ($userId) {
                     $query->where('user_id', $userId);
-                },
-                'book.userRatings' => function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
                 }
             ]);
         }
@@ -75,11 +72,30 @@ class ReviewController
      */
     public function store(StoreReviewRequest $request)
     {
+        $userId = $request->user()->id;
+        $bookId = $request->validated('book_id');
+        
+        // Check if user already has a review for this book
+        $existingReview = Review::where('user_id', $userId)
+            ->where('book_id', $bookId)
+            ->first();
+            
+        if ($existingReview) {
+            return response()->json([
+                'message' => 'You have already reviewed this book. You can edit your existing review instead.',
+                'existing_review' => new ReviewResource($existingReview->load(['user', 'book']))
+            ], 409);
+        }
+
         $review = Review::create([
-            'user_id' => $request->user()->id,
-            'book_id' => $request->validated('book_id'),
+            'user_id' => $userId,
+            'book_id' => $bookId,
             'content' => $request->validated('content'),
+            'rating' => $request->validated('rating'),
         ]);
+
+        // Update book's average rating
+        $review->book->updateAverageRating();
 
         return new ReviewResource($review->load(['user', 'book']));
     }
@@ -100,9 +116,6 @@ class ReviewController
                 'book',
                 'book.userBooks' => function ($query) use ($userId) {
                     $query->where('user_id', $userId);
-                },
-                'book.userRatings' => function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
                 }
             ]);
         }
@@ -122,7 +135,11 @@ class ReviewController
 
         $review->update([
             'content' => $request->validated('content'),
+            'rating' => $request->validated('rating'),
         ]);
+
+        // Update book's average rating
+        $review->book->updateAverageRating();
 
         return new ReviewResource($review->load(['user', 'book']));
     }
@@ -137,7 +154,11 @@ class ReviewController
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        $book = $review->book;
         $review->delete();
+
+        // Update book's average rating after deletion
+        $book->updateAverageRating();
 
         return response()->json(['message' => 'Review deleted successfully']);
     }

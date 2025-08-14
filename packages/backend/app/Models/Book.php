@@ -76,11 +76,12 @@ class Book extends Model
     }
 
     /**
-     * Get the user ratings for this book.
+     * Update the average rating based on reviews.
      */
-    public function userRatings(): HasMany
+    public function updateAverageRating(): void
     {
-        return $this->hasMany(UserBookRating::class);
+        $averageRating = $this->reviews()->whereNotNull('rating')->avg('rating');
+        $this->update(['average_rating' => $averageRating ?? 0]);
     }
 
     /**
