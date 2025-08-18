@@ -1249,6 +1249,31 @@
                             }
                         }
                     },
+                    "409": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "You have already reviewed this book. You can edit your existing review instead."
+                                            ]
+                                        },
+                                        "existing_review": {
+                                            "$ref": "#/components/schemas/ReviewResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "existing_review"
+                                    ]
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     },
@@ -1869,6 +1894,9 @@
                             "null"
                         ],
                         "properties": {
+                            "id": {
+                                "type": "string"
+                            },
                             "reading_status": {
                                 "type": "string"
                             },
@@ -1880,6 +1908,7 @@
                             }
                         },
                         "required": [
+                            "id",
                             "reading_status",
                             "current_page",
                             "notes"
@@ -2318,71 +2347,7 @@
                         "format": "date-time"
                     },
                     "book": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "title": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            },
-                            "average_rating": {
-                                "type": "number"
-                            },
-                            "cover_image_path": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "authors": {
-                                "type": "string"
-                            },
-                            "num_pages": {
-                                "type": "integer"
-                            },
-                            "published_year": {
-                                "type": "string"
-                            },
-                            "is_added_by_system": {
-                                "type": "boolean"
-                            },
-                            "book_status": {
-                                "type": "string"
-                            },
-                            "added_by": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "required": [
-                            "id",
-                            "title",
-                            "description",
-                            "average_rating",
-                            "cover_image_path",
-                            "authors",
-                            "num_pages",
-                            "published_year",
-                            "is_added_by_system",
-                            "book_status",
-                            "added_by",
-                            "created_at",
-                            "updated_at"
-                        ]
+                        "$ref": "#/components/schemas/BookResource"
                     }
                 },
                 "required": [

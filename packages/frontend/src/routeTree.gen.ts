@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MyLibraryRouteImport } from './routes/my-library'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BooksBookIdRouteImport } from './routes/books/$bookId'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 
+const MyLibraryRoute = MyLibraryRouteImport.update({
+  id: '/my-library',
+  path: '/my-library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
@@ -44,6 +50,7 @@ const AuthSigninRoute = AuthSigninRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-library': typeof MyLibraryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/books/$bookId': typeof BooksBookIdRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-library': typeof MyLibraryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/books/$bookId': typeof BooksBookIdRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
+  '/my-library': typeof MyLibraryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/books/$bookId': typeof BooksBookIdRoute
@@ -68,15 +77,23 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/browse'
+    | '/my-library'
     | '/auth/signin'
     | '/auth/signup'
     | '/books/$bookId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/auth/signin' | '/auth/signup' | '/books/$bookId'
+  to:
+    | '/'
+    | '/browse'
+    | '/my-library'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/books/$bookId'
   id:
     | '__root__'
     | '/'
     | '/browse'
+    | '/my-library'
     | '/auth/signin'
     | '/auth/signup'
     | '/books/$bookId'
@@ -85,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
+  MyLibraryRoute: typeof MyLibraryRoute
   AuthSigninRoute: typeof AuthSigninRoute
   AuthSignupRoute: typeof AuthSignupRoute
   BooksBookIdRoute: typeof BooksBookIdRoute
@@ -92,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/my-library': {
+      id: '/my-library'
+      path: '/my-library'
+      fullPath: '/my-library'
+      preLoaderRoute: typeof MyLibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/browse': {
       id: '/browse'
       path: '/browse'
@@ -133,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
+  MyLibraryRoute: MyLibraryRoute,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
   BooksBookIdRoute: BooksBookIdRoute,

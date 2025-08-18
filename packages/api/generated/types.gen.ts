@@ -30,6 +30,7 @@ export type BookResource = {
     created_at: string;
     updated_at: string;
     user_data: {
+        id: string;
         reading_status: string;
         current_page: string;
         notes: string;
@@ -179,21 +180,7 @@ export type UserBookResource = {
     status: string;
     created_at: string;
     updated_at: string;
-    book: {
-        id: string;
-        title: string;
-        description: string;
-        average_rating: number;
-        cover_image_path: string | null;
-        authors: string;
-        num_pages: number;
-        published_year: string;
-        is_added_by_system: boolean;
-        book_status: string;
-        added_by: string | null;
-        created_at: string;
-        updated_at: string;
-    };
+    book: BookResource;
 };
 
 /**
@@ -977,6 +964,10 @@ export type ReviewStoreErrors = {
          * Error overview.
          */
         message: string;
+    };
+    409: {
+        message: 'You have already reviewed this book. You can edit your existing review instead.';
+        existing_review: ReviewResource;
     };
     /**
      * Validation error
