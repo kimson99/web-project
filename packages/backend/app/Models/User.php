@@ -75,4 +75,20 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    /**
+     * Get the reviews for the user.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get the user's library books.
+     */
+    public function userBooks()
+    {
+        return $this->hasMany(UserBook::class);
+    }
 }

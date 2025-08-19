@@ -39,7 +39,7 @@ const Avatar = ({
 	return (
 		<div className="avatar" {...props}>
 			<div className={cn("w-10 rounded-full", className)}>
-				<img alt={`avatar-${initial}`} src={"src"} />
+				<img alt={`avatar-${initial}`} src={src} />
 			</div>
 		</div>
 	);

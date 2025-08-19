@@ -263,13 +263,17 @@ components/
   - Remove from library with confirmation modal
   - Reading status enum with centralized configuration
   - Professional UI with FontAwesome icons and consistent design
+✅ **User Profile Pages (`/profiles/{userId}`) - Complete!**
+  - Backend API endpoint with UserProfileResource including reading stats and recent activity
+  - Public profile route with responsive design using DaisyUI colors
+  - Reading statistics sidebar with semantic color coding (success, info, warning)
+  - Recent reviews section (5 latest) with proper star ratings and book navigation
+  - Recent library activity with status badges and book navigation
+  - Navigation integration: user dropdown → profile, review cards → user profiles
+  - Click-through navigation from profile books to book detail pages
+  - Type-safe implementation with proper null handling
 
 ## Required Features
-
-### **User Profile Pages (`/profiles/{userId}`)**
-- [ ] Basic user profile display
-- [ ] User's reviews and ratings
-- [ ] Reading activity overview
 
 ### **Admin Dashboard (`/admin`)**
 - [ ] Admin login and basic auth

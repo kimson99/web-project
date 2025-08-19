@@ -1444,6 +1444,98 @@
                 }
             }
         },
+        "/users/{userId}/profile": {
+            "get": {
+                "operationId": "user.profile",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserProfileResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "operationId": "user.show",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "user.update",
+                "tags": [
+                    "User"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/library": {
             "get": {
                 "operationId": "userLibrary.index",
@@ -2296,6 +2388,23 @@
                 },
                 "title": "UpdateUserBookRequest"
             },
+            "UpdateUserRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "avatar_path": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 500
+                    }
+                },
+                "title": "UpdateUserRequest"
+            },
             "UploadImageRequest": {
                 "type": "object",
                 "properties": {
@@ -2364,6 +2473,90 @@
                     "book"
                 ],
                 "title": "UserBookResource"
+            },
+            "UserProfileResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "avatar_path": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "reviews": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ReviewResource"
+                        }
+                    },
+                    "reading_stats": {
+                        "type": "object",
+                        "properties": {
+                            "total_books": {
+                                "type": "string"
+                            },
+                            "books_read": {
+                                "type": "string"
+                            },
+                            "books_reading": {
+                                "type": "string"
+                            },
+                            "books_want_to_read": {
+                                "type": "string"
+                            },
+                            "books_on_hold": {
+                                "type": "string"
+                            },
+                            "average_rating": {
+                                "type": "string"
+                            },
+                            "total_reviews": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "total_books",
+                            "books_read",
+                            "books_reading",
+                            "books_want_to_read",
+                            "books_on_hold",
+                            "average_rating",
+                            "total_reviews"
+                        ]
+                    },
+                    "recent_activity": {
+                        "type": "object",
+                        "properties": {
+                            "recent_reviews": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/ReviewResource"
+                                }
+                            },
+                            "recent_books": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/UserBookResource"
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "avatar_path",
+                    "created_at",
+                    "reading_stats",
+                    "recent_activity"
+                ],
+                "title": "UserProfileResource"
             },
             "UserResource": {
                 "type": "object",

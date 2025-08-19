@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserLibraryController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,12 +33,21 @@ Route::get('/authors/{author}', [AuthorController::class, 'show']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 
+// Public user profiles
+Route::get('/users/{userId}/profile', [UserController::class, 'profile']);
+
 // Protected routes (authentication required)
 Route::middleware("auth:sanctum")->group(function() {
     // User management
     Route::prefix('auth')->name('auth.')->group(function() {
         Route::get('/me', [AuthController::class, 'getMe']);
         Route::post('/logout', [AuthController::class, 'logout']);
+    });
+
+    // User profile management
+    Route::prefix('user')->name('user.')->group(function() {
+        Route::get('/profile', [UserController::class, 'show']);
+        Route::put('/profile', [UserController::class, 'update']);
     });
 
     // Books (admin operations)

@@ -129,7 +129,14 @@ const UserDropdown = ({
 }: {
 	user: { id: string; name: string; avatar: string | null };
 	onSignOut: () => void;
-}) => (
+}) => {
+	const navigate = useNavigate();
+	
+	const handleProfileClick = () => {
+		navigate({ to: `/profiles/${user.id}` });
+	};
+
+	return (
 	<div className="navbar-end mr-4">
 		<div className="dropdown dropdown-end">
 			<div
@@ -151,9 +158,12 @@ const UserDropdown = ({
 					<span className="text-xs text-base-content/70">Account</span>
 				</li>
 				<li>
-					<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
+					<button 
+						onClick={handleProfileClick}
+						className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors text-left w-full"
+					>
 						<span>Profile</span>
-					</a>
+					</button>
 				</li>
 				<li>
 					<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
@@ -171,7 +181,8 @@ const UserDropdown = ({
 			</ul>
 		</div>
 	</div>
-);
+	);
+};
 
 const GuestNavItems = () => {
 	const location = useLocation();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\ApiResponse;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserProfileResource;
 use Dedoc\Scramble\Support\Generator\Operation;
 use Dedoc\Scramble\Support\Generator\Response as ScrambleResponse;
 use Dedoc\Scramble\Support\Generator\Tag;
@@ -59,5 +60,26 @@ class UserController extends Controller
     public function show(Request $request)
     {
         return new UserResource($request->user());
+    }
+
+    #[Operation(
+        summary: 'Get user profile by ID',
+        description: 'Returns a user\'s public profile information including reviews and library stats'
+    )]
+    #[ScrambleResponse(
+        status: 200,
+        description: 'User profile',
+        type: UserProfileResource::class
+    )]
+    #[ScrambleResponse(
+        status: 404,
+        description: 'User not found'
+    )]
+    public function profile(string $userId)
+    {
+        $user = \App\Models\User::with(['reviews.book', 'userBooks.book'])
+            ->findOrFail($userId);
+            
+        return new UserProfileResource($user);
     }
 }

@@ -160,6 +160,14 @@ export type UpdateUserBookRequest = {
 };
 
 /**
+ * UpdateUserRequest
+ */
+export type UpdateUserRequest = {
+    name?: string;
+    avatar_path?: string | null;
+};
+
+/**
  * UploadImageRequest
  */
 export type UploadImageRequest = {
@@ -181,6 +189,30 @@ export type UserBookResource = {
     created_at: string;
     updated_at: string;
     book: BookResource;
+};
+
+/**
+ * UserProfileResource
+ */
+export type UserProfileResource = {
+    id: string;
+    name: string;
+    avatar_path: string;
+    created_at: string;
+    reviews?: Array<ReviewResource>;
+    reading_stats: {
+        total_books: string;
+        books_read: string;
+        books_reading: string;
+        books_want_to_read: string;
+        books_on_hold: string;
+        average_rating: string;
+        total_reviews: string;
+    };
+    recent_activity: {
+        recent_reviews?: Array<ReviewResource>;
+        recent_books?: Array<UserBookResource>;
+    };
 };
 
 /**
@@ -1145,6 +1177,122 @@ export type ReviewUpdateResponses = {
 };
 
 export type ReviewUpdateResponse = ReviewUpdateResponses[keyof ReviewUpdateResponses];
+
+export type UserProfileData = {
+    body?: never;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/users/{userId}/profile';
+};
+
+export type UserProfileErrors = {
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type UserProfileError = UserProfileErrors[keyof UserProfileErrors];
+
+export type UserProfileResponses = {
+    /**
+     * `UserProfileResource`
+     */
+    200: UserProfileResource;
+};
+
+export type UserProfileResponse = UserProfileResponses[keyof UserProfileResponses];
+
+export type UserShowData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/profile';
+};
+
+export type UserShowErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type UserShowError = UserShowErrors[keyof UserShowErrors];
+
+export type UserShowResponses = {
+    /**
+     * `UserResource`
+     */
+    200: UserResource;
+};
+
+export type UserShowResponse = UserShowResponses[keyof UserShowResponses];
+
+export type UserUpdateData = {
+    body?: UpdateUserRequest;
+    path?: never;
+    query?: never;
+    url: '/user/profile';
+};
+
+export type UserUpdateErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Authorization error
+     */
+    403: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type UserUpdateError = UserUpdateErrors[keyof UserUpdateErrors];
+
+export type UserUpdateResponses = {
+    /**
+     * `UserResource`
+     */
+    200: UserResource;
+};
+
+export type UserUpdateResponse = UserUpdateResponses[keyof UserUpdateResponses];
 
 export type UserLibraryIndexData = {
     body?: never;
