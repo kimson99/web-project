@@ -23,13 +23,13 @@ class UpdateBookRequest extends FormRequest
     {
         return [
             'isbn'=> ['sometimes', 'string'],
-            'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['sometimes', 'required', 'string', 'max:255'],
-            'cover_image_path' => ['sometimes', 'required', 'string', 'max:255'],
-            'authors' => ['sometimes', 'required', 'array', 'min:1'],
-            'authors.*' => ['required', 'string', 'max:255'],
-            'num_pages' => ['sometimes', 'required', 'integer', 'min:1'],
-            'published_year' => ['sometimes', 'required', 'string', 'max:4'],
+            'title' => ['sometimes', 'string', 'max:255'],
+            'description' => ['sometimes', 'string'],
+            'cover_image_path' => ['sometimes', 'string', 'max:255'],
+            'authors' => ['sometimes', 'array', 'min:1'],
+            'authors.*' => ['string', 'max:255'],
+            'num_pages' => ['sometimes', 'integer', 'min:1'],
+            'published_year' => ['sometimes', 'string', 'max:4'],
         ];
     }
 }

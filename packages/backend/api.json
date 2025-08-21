@@ -2510,9 +2510,6 @@
                             "books_want_to_read": {
                                 "type": "string"
                             },
-                            "books_on_hold": {
-                                "type": "string"
-                            },
                             "average_rating": {
                                 "type": "string"
                             },
@@ -2525,7 +2522,6 @@
                             "books_read",
                             "books_reading",
                             "books_want_to_read",
-                            "books_on_hold",
                             "average_rating",
                             "total_reviews"
                         ]
@@ -2589,6 +2585,9 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "role": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -2597,7 +2596,8 @@
                     "email",
                     "avatar_path",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "role"
                 ],
                 "title": "UserResource"
             }

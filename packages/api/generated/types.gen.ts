@@ -205,7 +205,6 @@ export type UserProfileResource = {
         books_read: string;
         books_reading: string;
         books_want_to_read: string;
-        books_on_hold: string;
         average_rating: string;
         total_reviews: string;
     };
@@ -225,6 +224,7 @@ export type UserResource = {
     avatar_path: string | null;
     created_at: string | null;
     updated_at: string | null;
+    role: string;
 };
 
 export type AuthAuthenticateData = {

@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
@@ -13,6 +13,23 @@ export const Route = createRootRoute({
 });
 
 const RootComponent = () => {
+	const location = useLocation();
+	const isAdminRoute = location.pathname.startsWith('/admin');
+
+	// For admin routes, render without navbar and footer
+	if (isAdminRoute) {
+		return (
+			<>
+				<div className="min-h-screen">
+					<Outlet />
+				</div>
+				<CustomToaster />
+				<TanStackRouterDevtools />
+			</>
+		);
+	}
+
+	// For regular routes, render with navbar and footer
 	return (
 		<>
 			<div className="min-h-screen flex flex-col">

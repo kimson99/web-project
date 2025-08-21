@@ -60,8 +60,9 @@ class BookController
         $skip = $request->validated('skip', 0);
         $take = $request->validated('take', 20);
 
-        $books = $query->skip($skip)->take($take)->get();
+        // Get total count before applying pagination
         $total = $query->count();
+        $books = $query->skip($skip)->take($take)->get();
 
         // If user is authenticated, load additional user-specific data
         if (auth()->check()) {
@@ -181,6 +182,10 @@ class BookController
      */
     public function destroy(Book $book)
     {
+        // Detach all authors before deleting the book
+        $book->authors()->detach();
+        
+        // Delete the book
         $book->delete();
 
         return response()->json(['message' => 'Book deleted successfully']);

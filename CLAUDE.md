@@ -171,24 +171,29 @@ components/
 - Props interfaces for all components
 - Custom hooks for business logic
 - Error boundaries for graceful failures
-- Use DaisyUI when needed
+- **⚠️ MANDATORY: Always use DaisyUI classes for ALL UI components if possible(buttons, forms, cards, modals, etc.)**
 - **Date handling**: Use dayjs for all date operations and formatting
+
   ```tsx
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   dayjs.extend(relativeTime);
-  
+
   // Relative time display
-  {dayjs(review.created_at).fromNow()}
+  {
+  	dayjs(review.created_at).fromNow();
+  }
   ```
+
 - **Toast notifications**: Use react-hot-toast for success/error messages instead of inline alerts
+
   ```tsx
   import toast from "react-hot-toast";
-  
+
   // Success message
   toast.success("Review submitted successfully!");
-  
-  // Error message  
+
+  // Error message
   toast.error("Failed to submit review. Please try again.");
   ```
 
@@ -244,42 +249,49 @@ components/
 ✅ Consistent UI components (BookCover, Avatar, Modal)
 ✅ Date handling with dayjs
 ✅ **Review System (Complete)**
-  - Review submission form with rating and content
-  - Review update functionality for existing reviews
-  - Unique review constraint (one per user per book)
-  - Review display in book detail pages with posted dates
-  - Toast notifications for success/error feedback
-✅ **Smart Library Actions (Complete)**
-  - Split button design with main action + dropdown
-  - Dynamic button text/icon based on current status
-  - Status-aware UI (disabled when book already in library)
-  - Update library status functionality
-  - FontAwesome 6 icons for visual clarity
-✅ **User Library Management (`/my-library`) - Complete!**
-  - Personal library dashboard with responsive grid layout
-  - Status filter tabs with real-time counts and search functionality
-  - Note-taking and page tracking with progress percentages
-  - Edit modal (status, current page, notes) accessible via dropdown
-  - Remove from library with confirmation modal
-  - Reading status enum with centralized configuration
-  - Professional UI with FontAwesome icons and consistent design
-✅ **User Profile Pages (`/profiles/{userId}`) - Complete!**
-  - Backend API endpoint with UserProfileResource including reading stats and recent activity
-  - Public profile route with responsive design using DaisyUI colors
-  - Reading statistics sidebar with semantic color coding (success, info, warning)
-  - Recent reviews section (5 latest) with proper star ratings and book navigation
-  - Recent library activity with status badges and book navigation
-  - Navigation integration: user dropdown → profile, review cards → user profiles
-  - Click-through navigation from profile books to book detail pages
-  - Type-safe implementation with proper null handling
+
+- Review submission form with rating and content
+- Review update functionality for existing reviews
+- Unique review constraint (one per user per book)
+- Review display in book detail pages with posted dates
+- Toast notifications for success/error feedback
+  ✅ **Smart Library Actions (Complete)**
+- Split button design with main action + dropdown
+- Dynamic button text/icon based on current status
+- Status-aware UI (disabled when book already in library)
+- Update library status functionality
+- FontAwesome 6 icons for visual clarity
+  ✅ **User Library Management (`/my-library`) - Complete!**
+- Personal library dashboard with responsive grid layout
+- Status filter tabs with real-time counts and search functionality
+- Note-taking and page tracking with progress percentages
+- Edit modal (status, current page, notes) accessible via dropdown
+- Remove from library with confirmation modal
+- Reading status enum with centralized configuration
+- Professional UI with FontAwesome icons and consistent design
+  ✅ **User Profile Pages (`/profiles/{userId}`) - Complete!**
+- Backend API endpoint with UserProfileResource including reading stats and recent activity
+- Public profile route with responsive design using DaisyUI colors
+- Reading statistics sidebar with semantic color coding (success, info, warning)
+- Recent reviews section (5 latest) with proper star ratings and book navigation
+- Recent library activity with status badges and book navigation
+- Navigation integration: user dropdown → profile, review cards → user profiles
+- Click-through navigation from profile books to book detail pages
+- Type-safe implementation with proper null handling
+  ✅ **Admin Books Management - Complete!**
+- Books listing with DaisyUI pagination (fixed backend count bug)
+- Book creation with image upload via MediaController
+- Book editing with optional image updates and proper validation
+- Search, delete functionality with modals (fixed foreign key constraint)
 
 ## Required Features
 
-### **Admin Dashboard (`/admin`)**
-- [ ] Admin login and basic auth
-- [ ] Manage books (add/edit/delete)
-- [ ] Manage users
-- [ ] Basic content moderation
+### **Admin Dashboard (`/admin`) - In Progress**
+
+- [x] Book management (list, create, edit, delete)
+- [ ] Admin authentication & authorization (half way there, still need frontend route protection)
+- [ ] User management
+- [ ] Content moderation
 
 ## Navigation Patterns
 
@@ -291,7 +303,7 @@ components/
 
 ## Important Notes
 
-- Always regenerate API types after backend changes
+- Note user to regenerate API types after backend changes
 - Use consistent naming: `skip`/`take` for pagination
 - Follow component composition patterns
 - Maintain type safety throughout the stack
@@ -331,11 +343,12 @@ components/
    ```
 
 3. **Resource Structure**: Let the Resource classes define the structure rather than complex PHPDoc annotations:
+
    ```php
    // ✅ GOOD - Laravel Scramble reads the actual Resource structure
    'user' => new UserResource($this->user),
    'authors' => AuthorResource::collection($this->authors),
-   
+
    // ❌ AVOID - Complex PHPDoc annotations may not be parsed by Scramble
    /**
     * @return array{complex: array<nested, structure>}

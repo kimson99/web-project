@@ -22,6 +22,7 @@ export interface User {
 	id: string;
 	name: string;
 	avatar: string | null;
+	role: string;
 }
 
 const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
@@ -38,7 +39,7 @@ const useAuth = ({ onSignUpSuccess, onSignInSuccess }: AuthProps) => {
 
 	const handleSetUser = (data: UserResource) => {
 		const avatar = data.avatar_path ? `${API_URL}/${data.avatar_path}` : null;
-		setUser({ id: data.id, name: data.name, avatar });
+		setUser({ id: data.id, name: data.name, avatar, role: data.role });
 	};
 
 	useEffect(() => {

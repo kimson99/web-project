@@ -106,7 +106,7 @@ class Book extends Model
     public function getCoverImageUrlAttribute(): ?string
     {
         if ($this->cover_image_path) {
-            return config('app.url') . '/' . $this->cover_image_path;
+            return config('app.url') . '/api/media/serve/' . $this->cover_image_path;
         }
         
         if ($this->ol_cover_key) {
