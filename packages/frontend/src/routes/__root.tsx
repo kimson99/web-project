@@ -14,7 +14,7 @@ export const Route = createRootRoute({
 
 const RootComponent = () => {
 	const location = useLocation();
-	const isAdminRoute = location.pathname.startsWith('/admin');
+	const isAdminRoute = location.pathname.startsWith("/admin");
 
 	// For admin routes, render without navbar and footer
 	if (isAdminRoute) {
@@ -24,7 +24,7 @@ const RootComponent = () => {
 					<Outlet />
 				</div>
 				<CustomToaster />
-				<TanStackRouterDevtools />
+				{/* <TanStackRouterDevtools /> */}
 			</>
 		);
 	}
@@ -40,7 +40,7 @@ const RootComponent = () => {
 				<Footer />
 			</div>
 			<CustomToaster />
-			<TanStackRouterDevtools />
+			{/* <TanStackRouterDevtools /> */}
 		</>
 	);
 };

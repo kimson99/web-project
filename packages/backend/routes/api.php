@@ -50,11 +50,21 @@ Route::middleware("auth:sanctum")->group(function() {
         Route::put('/profile', [UserController::class, 'update']);
     });
 
-    // Books (admin operations)
-    Route::prefix('books')->name('books.')->middleware('admin')->group(function() {
-        Route::post('/', [BookController::class, 'store']);
-        Route::put('/{book}', [BookController::class, 'update']);
-        Route::delete('/{book}', [BookController::class, 'destroy']);
+    // Admin routes
+    Route::middleware('admin')->group(function() {
+        // Books (admin operations)
+        Route::prefix('books')->name('books.')->group(function() {
+            Route::post('/', [BookController::class, 'store']);
+            Route::put('/{book}', [BookController::class, 'update']);
+            Route::delete('/{book}', [BookController::class, 'destroy']);
+        });
+
+        // Users (admin operations)
+        Route::prefix('users')->name('users.')->group(function() {
+            Route::get('/', [UserController::class, 'index']);
+            Route::put('/{user}', [UserController::class, 'adminUpdate']);
+            Route::delete('/{user}', [UserController::class, 'destroy']);
+        });
     });
 
 

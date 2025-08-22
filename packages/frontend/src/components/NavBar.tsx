@@ -1,8 +1,10 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { FaChevronDown } from "react-icons/fa6";
 import { useState } from "react";
 import { useAuthContext } from "../providers/useAuthContext";
 import Avatar from "./Avatar";
+import { FaCog, FaSignOutAlt, FaUserCircle, FaUserCog } from "react-icons/fa";
+import { cn } from "../libs/utils";
 
 interface NavBarItem {
 	id: string;
@@ -57,9 +59,9 @@ const SearchInput = ({ className = "" }: { className?: string }) => {
 					<path d="m21 21-4.3-4.3"></path>
 				</g>
 			</svg>
-			<input 
-				type="search" 
-				placeholder="Search books & authors..." 
+			<input
+				type="search"
+				placeholder="Search books & authors..."
 				value={searchValue}
 				onChange={(e) => setSearchValue(e.target.value)}
 			/>
@@ -90,8 +92,8 @@ const MobileMenuButton = () => (
 
 const MobileDropdown = () => {
 	const location = useLocation();
-	const isBrowsePage = location.pathname === '/browse';
-	
+	const isBrowsePage = location.pathname === "/browse";
+
 	return (
 		<ul
 			tabIndex={0}
@@ -111,83 +113,111 @@ const MobileDropdown = () => {
 	);
 };
 
-const DesktopNavItems = () => (
-	<div id="desktop-nav-items" className="flex max-sm:hidden">
-		<ul className="flex items-center justify-start gap-4">
-			{navBarItems.map((item) => (
-				<li key={item.id} className="whitespace-nowrap px-2">
-					<a href={item.path}>{item.label}</a>
-				</li>
-			))}
-		</ul>
-	</div>
-);
+const DesktopNavItems = () => {
+	const location = useLocation();
+	return (
+		<div id="desktop-nav-items" className="flex max-sm:hidden">
+			<ul className="flex items-center justify-start gap-4 font-semibold text-primary-content/60">
+				{navBarItems.map((item) => (
+					<li
+						key={item.id}
+						className={cn(
+							"whitespace-nowrap px-2 hover:text-primary-content",
+							location.pathname === item.path && "text-primary-content"
+						)}
+					>
+						<a href={item.path}>{item.label}</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	);
+};
 
 const UserDropdown = ({
 	user,
 	onSignOut,
 }: {
-	user: { id: string; name: string; avatar: string | null };
+	user: {
+		id: string;
+		name: string;
+		avatar: string | null;
+		role: string;
+	};
 	onSignOut: () => void;
 }) => {
 	const navigate = useNavigate();
-	
+
 	const handleProfileClick = () => {
 		navigate({ to: `/profiles/${user.id}` });
 	};
 
 	return (
-	<div className="navbar-end mr-4">
-		<div className="dropdown dropdown-end">
-			<div
-				className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 cursor-pointer transition-colors"
-				role="button"
-				tabIndex={1}
-			>
-				<Avatar name={user.name} src={user.avatar} className="w-8" />
-				<div className="flex flex-col items-start max-sm:hidden">
-					<span className="text-sm font-medium">{user.name}</span>
+		<div className="navbar-end mr-4">
+			<div className="dropdown dropdown-end">
+				<div
+					className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 cursor-pointer transition-colors"
+					role="button"
+					tabIndex={1}
+				>
+					<Avatar name={user.name} src={user.avatar} className="w-8" />
+					<div className="flex flex-col items-start max-sm:hidden">
+						<span className="text-sm font-medium">{user.name}</span>
+					</div>
+					<FaChevronDown className="text-xs text-base-content/60" />
 				</div>
-				<FaChevronDown className="text-xs text-base-content/60" />
+				<ul
+					tabIndex={1}
+					className="dropdown-content menu bg-base-100 rounded-box z-[1000] w-56 p-2 shadow-lg border border-base-300 mt-2"
+				>
+					<li className="menu-title px-3 py-2">
+						<span className="text-xs text-base-content/70">Account</span>
+					</li>
+					<li>
+						<button
+							onClick={handleProfileClick}
+							className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors text-left w-full"
+						>
+							<FaUserCircle />
+							<span>Profile</span>
+						</button>
+					</li>
+					<li>
+						<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
+							<FaCog />
+							<span>Settings</span>
+						</a>
+					</li>
+					{user.role === "admin" && (
+						<li>
+							<Link
+								className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors"
+								to="/admin/books"
+							>
+								<FaUserCog />
+								Admin
+							</Link>
+						</li>
+					)}
+					<li className="border-t border-base-300 mt-2 pt-2">
+						<button
+							onClick={onSignOut}
+							className="px-3 py-2 rounded-md hover:bg-error/10 hover:text-error transition-colors text-left w-full"
+						>
+							<FaSignOutAlt />
+							<span>Sign Out</span>
+						</button>
+					</li>
+				</ul>
 			</div>
-			<ul
-				tabIndex={1}
-				className="dropdown-content menu bg-base-100 rounded-box z-[1000] w-56 p-2 shadow-lg border border-base-300 mt-2"
-			>
-				<li className="menu-title px-3 py-2">
-					<span className="text-xs text-base-content/70">Account</span>
-				</li>
-				<li>
-					<button 
-						onClick={handleProfileClick}
-						className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors text-left w-full"
-					>
-						<span>Profile</span>
-					</button>
-				</li>
-				<li>
-					<a className="px-3 py-2 rounded-md hover:bg-base-200 transition-colors">
-						<span>Settings</span>
-					</a>
-				</li>
-				<li className="border-t border-base-300 mt-2 pt-2">
-					<button 
-						onClick={onSignOut}
-						className="px-3 py-2 rounded-md hover:bg-error/10 hover:text-error transition-colors text-left w-full"
-					>
-						<span>Sign Out</span>
-					</button>
-				</li>
-			</ul>
 		</div>
-	</div>
 	);
 };
 
 const GuestNavItems = () => {
 	const location = useLocation();
-	const isBrowsePage = location.pathname === '/browse';
-	
+	const isBrowsePage = location.pathname === "/browse";
+
 	return (
 		<div className="navbar-end gap-4">
 			{!isBrowsePage && <SearchInput className="max-sm:hidden ml-4 w-96" />}
@@ -220,7 +250,9 @@ const NavBar = () => {
 				<DesktopNavItems />
 			</div>
 
-			{!!user && !isLoadingUser && <UserDropdown user={user} onSignOut={handleSignOut} />}
+			{!!user && !isLoadingUser && (
+				<UserDropdown user={user} onSignOut={handleSignOut} />
+			)}
 			{!isAuthRoute && !user && <GuestNavItems />}
 		</nav>
 	);

@@ -27,7 +27,10 @@ class UserResource extends JsonResource
             'avatar_path' => $this->avatar_path,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'role' => $this->role
+            'role' => $this->role,
+            'is_active' => $this->is_active,
+            'reviews_count' => $this->whenCounted('reviews'),
+            'user_books_count' => $this->whenCounted('userBooks'),
         ];
     }
 }

@@ -1,15 +1,36 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useNavigate,
+} from "@tanstack/react-router";
+import { FaBook, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { useAuthContext } from "../providers/useAuthContext";
 import { useEffect } from "react";
 import Avatar from "../components/Avatar";
+import { useQuery } from "@tanstack/react-query";
+import { bookIndex, userIndex } from "@repo/api";
 
 export const Route = createFileRoute("/admin")({
 	component: AdminLayout,
 });
 
 function AdminLayout() {
-	const { user, isLoadingUser } = useAuthContext();
+	const { user, isLoadingUser, mutateLogout } = useAuthContext();
 	const navigate = useNavigate();
+
+	// Fetch stats from existing APIs
+	const { data: booksData } = useQuery({
+		queryKey: ["admin-books"],
+		queryFn: () => bookIndex({ query: { take: 1 } }),
+		enabled: !!user?.role && user.role === "admin",
+	});
+
+	const { data: usersData } = useQuery({
+		queryKey: ["admin-users"],
+		queryFn: () => userIndex({ query: { take: 1 } }),
+		enabled: !!user?.role && user.role === "admin",
+	});
 
 	useEffect(() => {
 		// Only run this effect when loading is complete
@@ -72,17 +93,17 @@ function AdminLayout() {
 			</div>
 
 			{/* Sidebar */}
-			<div className="drawer-side">
+			<div className="drawer-side ">
 				<label
 					htmlFor="admin-drawer"
 					aria-label="close sidebar"
 					className="drawer-overlay"
 				></label>
-				<aside className="min-h-full w-80 bg-base-100">
+				<aside className="flex flex-col min-h-full w-80 bg-base-100">
 					{/* Admin Header */}
 					<div className="bg-primary text-primary-content p-6">
 						<div className="flex items-center gap-3">
-							<Avatar 
+							<Avatar
 								name={user?.name || "Admin"}
 								src={user?.avatar}
 								className="w-12 h-12"
@@ -95,75 +116,56 @@ function AdminLayout() {
 					</div>
 
 					{/* Navigation Menu */}
-					<div className="p-4">
-						<ul className="menu menu-lg">
+					<div className="mt-4 grow-1">
+						<ul className="menu w-full">
 							{/* Content Management */}
 							<li className="menu-title">
 								<span>Content Management</span>
 							</li>
 							<li>
-								<a href="/admin/books" className="active">
-									<i className="fas fa-book"></i>
+								<Link to="/admin/books" className="active">
+									<FaBook />
 									Books
-									<div className="badge badge-primary badge-sm">12</div>
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a href="/admin/authors">
-									<i className="fas fa-user-edit"></i>
-									Authors
-								</a>
-							</li>
-							<li>
-								<a href="/admin/reviews">
-									<i className="fas fa-star"></i>
-									Reviews
-								</a>
-							</li>
-
-							{/* User Management */}
-							<li className="menu-title mt-4">
-								<span>User Management</span>
-							</li>
-							<li>
-								<a href="/admin/users">
-									<i className="fas fa-users"></i>
+								<Link to="/admin/users">
+									<FaUser />
 									Users
-								</a>
-							</li>
-
-							{/* Moderation */}
-							<li className="menu-title mt-4">
-								<span>Moderation</span>
-							</li>
-							<li>
-								<a href="/admin/moderation">
-									<i className="fas fa-shield-alt"></i>
-									Content Moderation
-									<div className="badge badge-warning badge-sm">3</div>
-								</a>
-							</li>
-
-							{/* System */}
-							<li className="menu-title mt-4">
-								<span>System</span>
-							</li>
-							<li>
-								<a href="/admin/settings">
-									<i className="fas fa-cog"></i>
-									Settings
-								</a>
+								</Link>
 							</li>
 						</ul>
-
-						{/* Bottom Actions */}
-						<div className="mt-8 p-4 bg-base-200 rounded-lg">
-							<div className="stat">
-								<div className="stat-title">Books Pending</div>
-								<div className="stat-value text-primary">5</div>
-								<div className="stat-desc">Need approval</div>
+					</div>
+					{/* Bottom Actions */}
+					<div className="mt-4 p-4 bg-base-200 rounded-lg">
+						<div className="stat flex justify-between">
+							<div>
+								<div className="stat-title">Total Books</div>
+								<div className="stat-value text-primary">
+									{booksData?.data?.meta?.total || 0}
+								</div>
+							</div>
+							<div>
+								<div className="stat-title">Total Users</div>
+								<div className="stat-value text-primary">
+									{usersData?.data?.meta?.total || 0}
+								</div>
 							</div>
 						</div>
+					</div>
+
+					{/* Logout Button */}
+					<div className="mt-8 p-4">
+						<button
+							onClick={() => {
+								mutateLogout();
+								navigate({ to: "/" });
+							}}
+							className="btn btn-outline btn-error w-full"
+						>
+							<FaSignOutAlt />
+							Logout
+						</button>
 					</div>
 				</aside>
 			</div>
