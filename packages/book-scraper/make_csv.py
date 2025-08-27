@@ -1,10 +1,38 @@
 import json
 import csv
+import re
 from pathlib import Path
 
 # Create csv directory if it doesn't exist
 csv_dir = Path('./data/csv')
 csv_dir.mkdir(parents=True, exist_ok=True)
+
+def sanitize_text(s: str, mode: str = "escape") -> str:
+    if s is None:
+        return ""
+    # Normalize to str
+    if not isinstance(s, str):
+        s = str(s)
+
+    # First, normalize Windows CRLF to a single marker
+    # (this avoids producing "\\r\\n" when escaping both separately)
+    s = s.replace("\r\n", "\n").replace("\r", "\n")
+
+    if mode == "escape":
+        # Turn line breaks into visible \n
+        s = s.replace("\n", r"\n")
+    elif mode == "space":
+        # Flatten by turning any line break into a space
+        s = s.replace("\n", " ")
+    elif mode == "keep":
+        # Keep real newlines (works for Excel/pandas readers, but breaks line tools)
+        return s
+    else:
+        raise ValueError("mode must be 'escape', 'space', or 'keep'")
+
+    # Optionally scrub other ASCII control chars (except tab if you need it)
+    s = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", " ", s)
+    return s
 
 def make_book_csv():
     with open('./data/all.json', 'r', encoding='utf-8') as f:
@@ -19,8 +47,8 @@ def make_book_csv():
         for record in data:
             writer.writerow([
                 record['id'],
-                record['title'],
-                record['description'],
+                record['title'][0:255],
+                sanitize_text(record['description'])[0:5000],
                 record.get('number_of_pages', 0),
                 record.get('first_publish_year', "0"),
                 record.get('cover_edition_key')

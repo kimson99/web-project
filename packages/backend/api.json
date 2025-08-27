@@ -1669,10 +1669,8 @@
                         "name": "user",
                         "in": "path",
                         "required": true,
-                        "description": "The user ID",
                         "schema": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1697,7 +1695,25 @@
                         }
                     },
                     "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "User not found"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -2140,7 +2156,7 @@
                     "role": {
                         "type": "string",
                         "enum": [
-                            "user",
+                            "member",
                             "admin"
                         ]
                     },

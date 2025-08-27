@@ -16,7 +16,7 @@ return new class extends Migration
         });
 
         // Drop the user_book_ratings table since ratings are now in reviews
-        Schema::dropIfExists('user_book_ratings');
+        Schema::dropIfExists('user_book_rating');
     }
 
     /**
@@ -29,7 +29,7 @@ return new class extends Migration
         });
 
         // Recreate the user_book_ratings table for rollback
-        Schema::create('user_book_ratings', function (Blueprint $table) {
+        Schema::create('user_book_rating', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->uuid('book_id');

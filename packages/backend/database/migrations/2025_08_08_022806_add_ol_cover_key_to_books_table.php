@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
-            $table->string('ol_cover_key')->nullable()->after('cover');
+            $table->string('ol_cover_key')->nullable()->after('cover_image_path');
         });
     }
 

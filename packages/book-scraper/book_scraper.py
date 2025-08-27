@@ -9,7 +9,7 @@ BASE_URL = "http://openlibrary.org"
 async def fetch_genre(genre_label, session):
     genre = genre_label.replace(" ", "_").lower()
     
-    url = f"{BASE_URL}/search.json?q=subject_key:{genre}+language:eng&fields=key,title,author_key,author_name,number_of_pages_median,cover_edition_key,editions,editions.key,editions.title,editions.subtitle,editions.cover_i,editions.isbn,description&sort=rating desc&limit=10&offset=0"
+    url = f"{BASE_URL}/search.json?q=subject_key:{genre}+language:eng&fields=key,title,author_key,author_name,number_of_pages_median,cover_edition_key,editions,editions.key,editions.title,editions.subtitle,editions.cover_i,editions.isbn,description&sort=rating desc&limit=100&offset=0"
     
     async with session.get(url) as response:
         if not response.ok:
@@ -60,11 +60,11 @@ async def main():
     genres = [genre['name'] for genre in genres_data]
 
     async with aiohttp.ClientSession() as session:
-        await fetch_genre("Adventure", session)
+        # await fetch_genre("Adventure", session)
       
-        # for genre in genres:
-        #     await fetch_genre(genre, session)
-        #     await asyncio.sleep(1)
+        for genre in genres:
+            await fetch_genre(genre, session)
+            await asyncio.sleep(1)
 
 if __name__ == "__main__":
     asyncio.run(main()) 
