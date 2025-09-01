@@ -28,7 +28,6 @@ const Browse = () => {
 					take: 20,
 				},
 			}),
-		enabled: !!q?.trim(),
 		getNextPageParam: (lastPage, pages) => {
 			if (lastPage.data?.meta?.has_more) {
 				return pages.length * 20;
@@ -49,7 +48,6 @@ const Browse = () => {
 					take: 20,
 				},
 			}),
-		enabled: !!q?.trim(),
 		getNextPageParam: (lastPage, pages) => {
 			if (lastPage.data?.meta?.has_more) {
 				return pages.length * 20;
@@ -86,7 +84,6 @@ const Browse = () => {
 	const books = booksData?.pages.flatMap((page) => page.data?.data || []) || [];
 	const authors =
 		authorsData?.pages.flatMap((page) => page.data?.data || []) || [];
-	const hasSearched = !!q?.trim();
 
 	const handleSearch = async () => {
 		if (!searchQuery.trim()) return;
@@ -99,7 +96,6 @@ const Browse = () => {
 	const handleTabChange = (tab: "books" | "authors") => {
 		setActiveTab(tab);
 	};
-
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -114,40 +110,38 @@ const Browse = () => {
 					onSearch={handleSearch}
 				/>
 
-				{hasSearched && (
-					<>
-						<SearchTabs
-							activeTab={activeTab}
-							onTabChange={handleTabChange}
-							booksCount={books.length}
-							authorsCount={authors.length}
-						/>
+				<>
+					<SearchTabs
+						activeTab={activeTab}
+						onTabChange={handleTabChange}
+						booksCount={books.length}
+						authorsCount={authors.length}
+					/>
 
-						<div className="min-h-96">
-							{activeTab === "books" && (
-								<BooksGrid
-									books={books}
-									isLoading={booksLoading}
-									hasNextPage={booksHasNext}
-									isFetchingNextPage={booksFetching}
-									onLoadMore={fetchMoreBooks}
-									searchQuery={q || ""}
-								/>
-							)}
+					<div className="min-h-96">
+						{activeTab === "books" && (
+							<BooksGrid
+								books={books}
+								isLoading={booksLoading}
+								hasNextPage={booksHasNext}
+								isFetchingNextPage={booksFetching}
+								onLoadMore={fetchMoreBooks}
+								searchQuery={q || ""}
+							/>
+						)}
 
-							{activeTab === "authors" && (
-								<AuthorsGrid
-									authors={authors}
-									isLoading={authorsLoading}
-									hasNextPage={authorsHasNext}
-									isFetchingNextPage={authorsFetching}
-									onLoadMore={fetchMoreAuthors}
-									searchQuery={q || ""}
-								/>
-							)}
-						</div>
-					</>
-				)}
+						{activeTab === "authors" && (
+							<AuthorsGrid
+								authors={authors}
+								isLoading={authorsLoading}
+								hasNextPage={authorsHasNext}
+								isFetchingNextPage={authorsFetching}
+								onLoadMore={fetchMoreAuthors}
+								searchQuery={q || ""}
+							/>
+						)}
+					</div>
+				</>
 			</div>
 		</div>
 	);
