@@ -6,9 +6,10 @@
     "type": "module",
     "scripts": {
         "build": "php artisan config:cache && php artisan route:cache",
-        "dev": "composer dev"
+        "dev": "composer dev",
+        "install": "composer install"
     },
     "devDependencies": {
-   		"concurrently": "^9.0.1"
+        "concurrently": "^9.0.1"
     }
 }
